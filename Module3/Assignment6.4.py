@@ -38,7 +38,7 @@ A_H = A.conj().T
 R = A @ A_H # assume equal powered sources
 Rn = np.eye(M,M)*sigma_n**2; # noise covariance
 Rx = R + Rn # received data covariance matrix
-    
+print(np.shape(Rx))   
     
 P_mbf = matchedbeamformer(Rx, th_range, M, d, v, f0)
 
