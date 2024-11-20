@@ -9,5 +9,5 @@ def a_lin(theta, M, d, v, f0):
         
     return a
 
-print(a_lin(np.pi/2,3,1,340,60))
+#print((a_lin(np.pi/2,3,1,340,60)))
 

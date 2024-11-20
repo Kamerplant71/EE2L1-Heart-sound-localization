@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Module3.Assignment6_2_3 import a_lin
+from Assignment6_2_3 import a_lin
 
 
 theta = np.linspace(-np.pi/2,np.pi/2,100)
@@ -11,15 +11,21 @@ f0 = 500
 v=340
 d = v*Delta/f0
 
-a_theta0 = a_lin(0,M,d,v,f0)
+a_theta0 = np.reshape(a_lin(0,M,d,v,f0),(7,1))
+
 
 Py = np.zeros(len(theta))
 
-Ah_theta= np.zeros(len(theta))
-for i in range(0,len(theta)):
 
-    y[i] = a_lin(theta[i], M, d, v, f0)
-    
-Py =  np.multiply(y.conj().T,a_theta0)
 
-print(Py)
+
+for i in range(0,len(theta)-1):
+    rowi = np.reshape( a_lin(theta[i],M,d,v,f0).conj(), (1,7) )
+    py = abs(np.matmul(rowi,a_theta0))**2
+    Py[i] = py[0][0]
+
+print(np.shape(Py))
+
+plt.plot(theta*180/np.pi,abs(Py))
+
+plt.show()
