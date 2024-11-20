@@ -20,7 +20,7 @@ Py = np.zeros(len(theta))
 
 
 for i in range(0,len(theta)-1):
-    rowi = np.reshape( a_lin(theta[i],M,d,v,f0).conj(), (1,7) )
+    rowi = np.reshape( a_lin(theta[i],M,d,v,f0).conj(), (1,M) )
     py = abs(np.matmul(rowi,a_theta0))**2
     Py[i] = py[0][0]
 
