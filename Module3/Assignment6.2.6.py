@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from Functions import a_lin
 
 #Theta range from -90 to 90 degrees
-theta = np.linspace(-np.pi/2,np.pi/2,100)
+theta = np.linspace(-np.pi/2,np.pi/2,1000)
 
 M = 7
 Delta = 1/2
@@ -13,7 +13,7 @@ v=340
 d = v*Delta/f0
 
 #Create a_theta0 
-a_theta0 = a_lin(0,M,d,v,f0)
+a_theta0 = a_lin(np.pi/4,M,d,v,f0)
 
 #Make Py an array with length number of calculated angles
 
@@ -32,4 +32,5 @@ print(np.shape(Py))
 plt.plot(theta*180/np.pi,abs(Py))
 plt.xlabel("Angle [deg]")
 plt.ylabel("Power ")
+plt.title("Spatial response beamformer")
 plt.show()

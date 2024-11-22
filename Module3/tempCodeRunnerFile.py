@@ -1,2 +1,2 @@
-        print(np.shape(a_H_theta))
-        print(np.shape(a_theta))
+
+P_mvdr = mvdr(Rx, th_range, M, d, v, f0)

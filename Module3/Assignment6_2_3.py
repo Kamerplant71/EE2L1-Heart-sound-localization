@@ -30,7 +30,6 @@ M=3
 d=1
 v = 340
 f0 =60
-
 print(a_lin(theta,M,d,v,f0))
 
 theta = [0,np.pi/2]
