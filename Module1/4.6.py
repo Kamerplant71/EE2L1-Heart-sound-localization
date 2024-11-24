@@ -15,22 +15,15 @@ xi = xi + 1e-10
 E=-(xi *np.log10(xi))
 
 b, a = butter(2, [15/2000], btype='low')
-y = signal.lfilter(b,a,E) #SEE envolope
+y = signal.lfilter(b,a,E)# SEE envolope
 y = y.real
 Y= fft(y)
 t= np.linspace(0,period*len(y),len(y))
 f= np.linspace(0,Fs, len(Y))
-plt.subplot(211)
-plt.plot(t,y)
-plt.xlabel("Time")
-plt.ylabel("Magnitude")
-plt.title("Time plot filtered E")
-plt.tight_layout()
 
-plt.subplot(212)
-plt.plot(f,abs(Y))
-plt.xlabel("Frequency")
-plt.ylabel("Magnitude")
-plt.title("Frequency filtered E")
-plt.xlim(0,20)
-plt.show()
+ynorm = y/max(abs(y))
+
+peaks, loveisintheair= signal.find_peaks(x, height=0.1, distance=1/Fs * 900)
+
+
+
