@@ -13,24 +13,26 @@ xn= x/max(abs(x))
 xi = xn**2
 xi = xi + 1e-10
 E=-(xi *np.log10(xi))
-
 b, a = butter(2, [15/2000], btype='low')
 y = signal.lfilter(b,a,E) #SEE envolope
-y = y.real
+
 Y= fft(y)
 t= np.linspace(0,period*len(y),len(y))
 f= np.linspace(0,Fs, len(Y))
 plt.subplot(211)
 plt.plot(t,y)
-plt.xlabel("Time")
+plt.xlabel("Time(s)")
 plt.ylabel("Magnitude")
-plt.title("Time plot filtered E")
+plt.title("Time plot SEE")
+plt.xlim(6,9)
+plt.ylim(0,0.005)
 plt.tight_layout()
 
 plt.subplot(212)
 plt.plot(f,abs(Y))
-plt.xlabel("Frequency")
+plt.xlabel("Frequency(Hz)")
 plt.ylabel("Magnitude")
-plt.title("Frequency filtered E")
+plt.title("Frequency plot SEE")
 plt.xlim(0,20)
 plt.show()
+plt.tight_layout()

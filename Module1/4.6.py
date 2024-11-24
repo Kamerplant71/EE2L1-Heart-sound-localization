@@ -15,15 +15,15 @@ xi = xi + 1e-10
 E=-(xi *np.log10(xi))
 
 b, a = butter(2, [15/2000], btype='low')
-y = signal.lfilter(b,a,E)# SEE envolope
+y = signal.lfilter(b,a,E)# SEE envelope
 y = y.real
 Y= fft(y)
 t= np.linspace(0,period*len(y),len(y))
 f= np.linspace(0,Fs, len(Y))
 
-ynorm = y/max(abs(y))
+Ynorm = Y/max(Y)
+ynorm = y/max(y)
 
-peaks, loveisintheair= signal.find_peaks(x, height=0.1, distance=1/Fs * 900)
-
-
+peaks, loveisintheair= signal.find_peaks(Ynorm, height=0.1, distance= )
+print(peaks)
 
