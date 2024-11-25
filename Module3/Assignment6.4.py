@@ -37,6 +37,26 @@ def mvdr(Rx, th_range, M, d, v, f0):
     return Py
     
 
+def wopt(Rx, th_range, M, d, v, f0):
+    Rxinv= np.linalg.inv(Rx)
+    
+    Wopt = np.zeros((len(th_range)),dtype="complex_")
+
+    #Loop for each theta
+    for i in range(0,len(th_range)):
+        #Calculate a_theta
+        a_theta= a_lin(th_range[i], M, d, v, f0)
+        a_H_theta = np.reshape( a_theta.conj(), (1,M) )
+        #Calculate Power
+      #  print(np.shape(a_H_theta))
+       # print(np.shape(a_theta))
+        wdenom= abs(np.matmul(np.matmul(a_H_theta,Rxinv),a_theta)) #denominator
+        wdenominv= 1/wdenom
+        wopt = abs(np.matmul(np.matmul(Rx, a_theta),wdenominv))
+        Wopt[i]= wopt[0][0]
+        
+    return Wopt
+
 #Initialize Constants
 theta0= [0,np.pi/12]
 Q = len(theta0)
@@ -45,7 +65,7 @@ th_range = np.linspace(-np.pi/2,np.pi/2, 1000)
 M=7
 delta =0.5
 v= 340
-f0= 300
+f0= 140
 d = delta*v/f0
 
 #Calculate Rx
@@ -59,19 +79,28 @@ Rx = R + Rn # received data covariance matrix
     
 P_mbf = matchedbeamformer(Rx, th_range, M, d, v, f0)
 P_mvdr = mvdr(Rx, th_range, M, d, v, f0)
+W_opt = wopt(Rx, th_range, M, d, v, f0)
 
 
-plt.subplot(211)
+plt.subplot(311)
 plt.plot(th_range*180/np.pi,abs(P_mbf))
 plt.xlabel("Angle [deg]")
 plt.ylabel("Power ")
 plt.title("Spatial spectrum, matched beamformer")
 
-plt.subplot(212)
+plt.subplot(312)
 plt.plot(th_range*180/np.pi,abs(P_mvdr))
 plt.xlabel("Angle [deg]")
 plt.ylabel("Power ")
 plt.title("Spatial spectrum, MVDR")
+
+plt.subplot(313)
+plt.plot(th_range*180/np.pi,(W_opt))
+plt.xlabel("Angle [deg]")
+plt.ylabel("Power ")
+plt.title("Spatial spectrum, MVDR")
+
+
 
 plt.tight_layout()
 plt.show()     
