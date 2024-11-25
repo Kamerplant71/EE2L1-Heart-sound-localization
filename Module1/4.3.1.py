@@ -6,7 +6,7 @@ from scipy.io import wavfile
 from scipy.fft import fft,ifft
 
 
-Fs, data = wavfile.read("module1\LinearArray-0-degrees\hrecording_2024-09-30_12-48-30_channel_1.wav")
+Fs, data = wavfile.read("Module1\hrecording_heart_ownDevice.wav")
 b, a = butter(2, [10/24000, 800/24000], btype='band')
 dirac = np.concatenate((np.zeros(1500),[1],np.zeros(1500)))
 g = signal.filtfilt(b, a,data)

@@ -6,8 +6,8 @@ from scipy import signal
 from scipy.io import wavfile
 from scipy.fft import fft,ifft
 
-Fs, x = wavfile.read("Module1\heart_single_channel_physionet_49829_TV.wav")
-b, a = butter(2, [10/2000, 800/2000], btype='band')
+Fs, x = wavfile.read("Module1\hrecording_heart_ownDevice.wav")
+b, a = butter(2, [10/24000, 800/24000], btype='band')
 g = signal.filtfilt(b, a,x)
 f , t , Sxx = spectrogram(x,Fs,nperseg=256)
 Sx_dB = 10*np.log10(Sxx)

@@ -7,13 +7,13 @@ import math
 from scipy.io import wavfile
 from scipy.fft import fft,ifft
 
-Fs, x = wavfile.read("Module1\heart_single_channel_physionet_49829_TV.wav")
+Fs, x = wavfile.read("Module1\hrecording_heart_ownDevice.wav")
 period = 1/Fs
 xn= x/max(abs(x))
 xi = xn**2
 xi = xi + 1e-10
 E=-(xi *np.log10(xi))
-b, a = butter(2, [15/2000], btype='low')
+b, a = butter(2, [15/24000], btype='low')
 y = signal.lfilter(b,a,E) #SEE envolope
 
 Y= fft(y)
@@ -24,8 +24,7 @@ plt.plot(t,y)
 plt.xlabel("Time(s)")
 plt.ylabel("Magnitude")
 plt.title("Time plot SEE")
-plt.xlim(6,9)
-plt.ylim(0,0.005)
+plt.xlim(0,3)
 plt.tight_layout()
 
 plt.subplot(212)
