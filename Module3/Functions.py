@@ -26,9 +26,10 @@ def matchedbeamformer(Rx, th_range, M, d, v, f0):
     for i in range(0,len(th_range)):
         #Calculate a_theta
         a_theta= a_lin(th_range[i], M, d, v, f0)
-        a_H_theta = np.reshape( a_theta.conj(), (1,M) )
+        a_H_theta =a_theta.conj().T
+
         #Calculate Power
-        py= abs(np.matmul(np.matmul(a_H_theta,Rx),a_theta))
+        py= (np.matmul(np.matmul(a_H_theta,Rx),a_theta))
         Py[i] = py[0][0]
 
     return Py
@@ -41,7 +42,7 @@ def mvdr(Rx, th_range, M, d, v, f0):
     for i in range(0,len(th_range)):
         #Calculate a_theta
         a_theta= a_lin(th_range[i], M, d, v, f0)
-        a_H_theta = np.reshape( a_theta.conj(), (1,M) )
+        a_H_theta = a_theta.conj().T
 
         #Calculate Power
         py1= (np.matmul(np.matmul(a_H_theta,Rxinv),a_theta))
@@ -49,4 +50,4 @@ def mvdr(Rx, th_range, M, d, v, f0):
         Py[i] = py[0][0]
 
     return Py
-    
+   

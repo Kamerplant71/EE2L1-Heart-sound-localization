@@ -11,7 +11,7 @@ def matchedbeamformer(Rx, th_range, M, d, v, f0):
     for i in range(0,len(th_range)):
         #Calculate a_theta
         a_theta= a_lin(th_range[i], M, d, v, f0)
-        a_H_theta = np.reshape( a_theta.conj(), (1,M) )
+        a_H_theta =a_theta.conj().T
 
         #Calculate Power
         py= (np.matmul(np.matmul(a_H_theta,Rx),a_theta))
@@ -27,7 +27,7 @@ def mvdr(Rx, th_range, M, d, v, f0):
     for i in range(0,len(th_range)):
         #Calculate a_theta
         a_theta= a_lin(th_range[i], M, d, v, f0)
-        a_H_theta = np.reshape( a_theta.conj(), (1,M) )
+        a_H_theta = a_theta.conj().T
 
         #Calculate Power
         py1= (np.matmul(np.matmul(a_H_theta,Rxinv),a_theta))
@@ -35,7 +35,7 @@ def mvdr(Rx, th_range, M, d, v, f0):
         Py[i] = py[0][0]
 
     return Py
-    
+
 
 def wopt(Rx, th_range, M, d, v, f0):
     Rxinv= np.linalg.inv(Rx)
@@ -48,11 +48,12 @@ def wopt(Rx, th_range, M, d, v, f0):
         a_theta= a_lin(th_range[i], M, d, v, f0)
         a_H_theta = a_theta.conj().T #np.reshape( a_theta.conj(), (1,M) )
         #Calculate Power
-      #  print(np.shape(a_H_theta))
-       # print(np.shape(a_theta))
+        #  print(np.shape(a_H_theta))
+        # print(np.shape(a_theta))
         wdenom= (np.matmul(np.matmul(a_H_theta,Rxinv),a_theta)) #denominator
         wopt = (np.matmul(Rxinv, a_theta))/ wdenom[0][0]
-        Py[i] = np.matmul(np.matmul(np.conj(wopt).T,Rx),wopt)
+        py = np.matmul(np.matmul(np.conj(wopt).T,Rx),wopt)
+        Py[i] = py[0][0]
 
     return Py
 

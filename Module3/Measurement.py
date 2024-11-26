@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from scipy.io import wavfile
 from scipy.signal import ShortTimeFFT
 from wavaudioread import wavaudioread
-from recording_tool import recording_tool
 from IPython.display import Audio
 from Functions import mvdr, matchedbeamformer
 fs = 48000
@@ -30,12 +29,11 @@ Pytotal = np.zeros(len(th_range))
 
 
 Sx_all = np.array(Sx_all)
-for j in range(1,30):
+for j in range(0,30):
     f0=f_bins[j]
     X = Sx_all[:, j, :]
     Rx = np.cov(X)
     Py = matchedbeamformer(Rx,th_range,6,0.1,340,f0)
-   
 
     Pytotal = Pytotal + Py
 
