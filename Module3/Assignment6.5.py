@@ -5,7 +5,7 @@ from wavaudioread import wavaudioread
 from Functions import mvdr, matchedbeamformer
 
 
-def narrowband_Rx(signal,nperseg,N_Bins,th_range):
+def narrowband_Rx(signal,nperseg,N_Bins):
     Sx_all = []
     win = ('gaussian', 1e-2 * fs) # Gaussian with 0.01 s standard dev.
     SFT = ShortTimeFFT.from_window(win, fs, nperseg, noverlap=0,scale_to='magnitude', phase_shift=None)
@@ -33,7 +33,7 @@ def narrowband_Rx(signal,nperseg,N_Bins,th_range):
     return f_bins, Rx_all
 
 fs = 48000
-signal = wavaudioread("Module3\Recordings\d1source_40degrees.wav",fs)
+signal = wavaudioread("Module3\Recordings\d1source_60degreesv2.wav",fs)
 th_range = np.linspace(-np.pi/2,np.pi/2, 1000)
 nperseg = 250
 N_Bins = 20
@@ -42,7 +42,7 @@ Mics = 6
 d = 0.1
 v=340
 
-f_bins, Rx_all = narrowband_Rx(signal,nperseg,N_Bins,th_range)
+f_bins, Rx_all = narrowband_Rx(signal,nperseg,N_Bins)
 
 Pytotal = np.zeros(len(th_range))
 
@@ -69,7 +69,7 @@ plt.plot(th_range*180/np.pi,abs(PyAvg_mbf))
 plt.xlabel("Angle [deg]")
 plt.ylabel("Power ")
 plt.title("Spatial spectrum, Matched Beamformer") 
-plt.vlines(40,ymin=min(PyAvg_mbf),ymax=max(PyAvg_mbf),linestyles="dashed",colors="r")
+plt.vlines(60,ymin=min(PyAvg_mbf),ymax=max(PyAvg_mbf),linestyles="dashed",colors="r")
 
 
 plt.subplot(212)
@@ -77,7 +77,7 @@ plt.plot(th_range*180/np.pi,abs(PyAvg_mvdr))
 plt.xlabel("Angle [deg]")
 plt.ylabel("Power ")
 plt.title("Spatial spectrum, MVDR") 
-plt.vlines(40,ymin=min(PyAvg_mvdr),ymax=max(PyAvg_mvdr),linestyles="dashed",colors="r")
+plt.vlines(60,ymin=min(PyAvg_mvdr),ymax=max(PyAvg_mvdr),linestyles="dashed",colors="r")
 
 plt.tight_layout()
 plt.show()
