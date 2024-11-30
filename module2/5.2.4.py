@@ -8,7 +8,7 @@ Fs = 4000
 Ts = 1/Fs
 
 
-def Transfer(duration,frequency,relative_amplitude,delay):
+def Impulse(duration,frequency,relative_amplitude,delay):
     a = 1/duration
     omega = 2*np.pi*frequency
     system = TransferFunction([0,0,omega*relative_amplitude],[1,2*a,a**2+omega**2])
@@ -31,33 +31,24 @@ def zero_pad_arrays(t1,t2,t3,t4):
     t4_new = np.concatenate((t4,np.zeros(mlen-len(t4))))
     return t1_new, t2_new, t3_new, t4_new
 
-# t_M,h_M,w_M,H_M = Transfer(0.02,50,1,0.01)
-# t_T,h_T,w_T,H_T = Transfer(0.02,150,0.5,0.04)
-# t_A,h_A,w_A,H_A = Transfer(0.02,50,0.5,0.3)
-# t_P,h_P,w_P,H_P = Transfer(0.02,30,0.4,0.33)
-# print(np.shape(t_M))
-# t_M,t_T,t_A,t_P = zero_pad_arrays(t_M,t_T,t_A,t_P)
-# h_M,h_T,h_A,h_P = zero_pad_arrays(h_M,h_T,h_A,h_P)
-# w_M,w_T,w_A,w_P = zero_pad_arrays(w_M,w_T,w_A,w_P)
-# H_M,H_T,H_A,H_P = zero_pad_arrays(H_M,H_T,H_A,H_P)
 
-h_M = Transfer(0.02,50,1,0.01)
-h_T = Transfer(0.02,150,0.5,0.04)
-h_A = Transfer(0.02,50,0.5,0.3)
-h_P = Transfer(0.02,30,0.4,0.33)
+
+
+h_M = Impulse(0.02,50,1,0.01)
+h_T = Impulse(0.02,150,0.5,0.04)
+h_A = Impulse(0.02,50,0.5,0.3)
+h_P = Impulse(0.02,30,0.4,0.33)
 
 h_M,h_T,h_A,h_P = zero_pad_arrays(h_M,h_T,h_A,h_P)
 
-# t = t_M+t_T+t_A+t_P
-# h = h_M+h_T+h_A+h_P
-# w = w_M+w_T+w_A+w_P
-# H = H_M+H_T+H_A+H_P
+def h_combine(h1,h2,h3,h4):
+    htotal = h1+h2+h3+h4
+    Htotal = fft(htotal)
+    t = np.linspace(0,len(htotal)/Fs,len(htotal))
+    w = np.linspace(0,2*np.pi*Fs,len(Htotal))
+    return htotal, Htotal, t, w
 
-htotal = h_M+h_T+h_A+h_P
-Htotal = fft(htotal)
-
-t = np.linspace(0,len(htotal)/Fs,len(htotal))
-w = np.linspace(0,2*np.pi*280,len(Htotal))
+htotal,Htotal,t,w = h_combine(h_M,h_T,h_A,h_P) 
 
 plt.subplot(211)
 plt.plot(t,htotal)
