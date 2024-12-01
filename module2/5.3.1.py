@@ -6,6 +6,7 @@ from scipy.io import wavfile
 from scipy.fft import fft,ifft
 Fs = 4000
 Velocity = 60*100 #in cms
+
 def Impulse(duration,frequency,relative_amplitude,delay):
     a = 1/duration
     omega = 2*np.pi*frequency
@@ -51,8 +52,19 @@ distances = np.linalg.norm(Valve_locations[:, np.newaxis, :] - Mics[np.newaxis, 
 Gain = 1/distances
 delays = distances/Velocity
 
-valve_signals = [h_M,h_T,h_A,h_P]
-X = np.zeros([6,len(h_A)])
+
+def input_signal(Ns,list_of_impulse_responses):
+    s = [None]*len(list_of_impulse_responses)
+    x = [None]*len(list_of_impulse_responses)
+    for i in range(len(list_of_impulse_responses)):
+        s[i]=np.concatenate((np.random.randn(Ns),np.zeros(len(list_of_impulse_responses[i]-Ns))))
+        x[i]=np.convolve(s[i],list_of_impulse_responses[i],mode = "full")
+    return x
+
+valve_impulses = [h_M,h_T,h_A,h_P]
+valve_signals = input_signal(10,valve_impulses)
+print(np.shape(valve_signals))
+X = np.zeros([6,len(valve_signals[1])])
 
 for m in range(6):  # For each microphone
     for v in range(4):  # For each valve
@@ -71,6 +83,6 @@ for m in range(len(X)):
 
 plt.tight_layout()
 plt.show()
-
+print(len(valve_signals))
 #print(delays)
 #print(np.all(Delay_apply_sig == 0))  # Returns True if all elements are zero
