@@ -52,13 +52,25 @@ Gain = 1/distances
 delays = distances/Velocity
 
 valve_signals = [h_M,h_T,h_A,h_P]
-
 X = np.zeros([6,len(h_A)])
+
 for m in range(6):  # For each microphone
     for v in range(4):  # For each valve
-        Delay_apply_sig = np.concatenate((np.zeros(int(delays[v,m]*Fs)),valve_signals[v]))
+        Delay_apply_sig = np.concatenate((np.zeros(int(delays[v,m])*Fs),valve_signals[v]))
+        X[m] += Gain[v,m] * Delay_apply_sig
+        #print(f"Mic {m}, Valve {v}, Signal: {X[m]}")
+        #print(np.all( X[m]== 0))
 
+for m in range(len(X)):
+    t = np.linspace (0,len(X[m])/Fs,len(X[m]))
+    plt.subplot(3,2,int(m+1))
+    plt.plot(t,X[m])
+    plt.xlabel("Time(s)")
+    plt.ylabel("Magnitude")
+    plt.title("signal")
 
+plt.tight_layout()
+plt.show()
 
-
-print (X)
+#print(delays)
+#print(np.all(Delay_apply_sig == 0))  # Returns True if all elements are zero
