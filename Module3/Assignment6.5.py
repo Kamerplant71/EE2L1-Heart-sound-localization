@@ -35,8 +35,8 @@ def narrowband_Rx(signal,nperseg,N_Bins):
 fs = 48000
 signal = wavaudioread("Module3\Recordings\d1source_60degreesv2.wav",fs)
 th_range = np.linspace(-np.pi/2,np.pi/2, 1000)
-nperseg = 250
-N_Bins = 30
+nperseg = 300
+N_Bins = 150
 
 Mics = 6
 d = 0.1
@@ -60,8 +60,8 @@ for i in range(1,N_Bins):
     Pytotal = Pytotal + Py
 PyAvg_mvdr = Pytotal / N_Bins
 
-
-
+print(len(f_bins))
+print(f_bins[1])
 #plt.rcParams['figure.figsize'] = [7 , 5]
 #plt.rcParams['figure.dpi'] = 150
 plt.subplot(211)
@@ -73,11 +73,11 @@ plt.vlines(60,ymin=min(PyAvg_mbf),ymax=max(PyAvg_mbf),linestyles="dashed",colors
 
 
 plt.subplot(212)
-plt.plot(th_range*180/np.pi,abs(PyAvg_mvdr))
+plt.plot(th_range*180/np.pi,abs(PyAvg_mvdr)/max(abs(PyAvg_mvdr)))
 plt.xlabel("Angle [deg]")
 plt.ylabel("Power ")
 plt.title("Spatial spectrum, MVDR") 
-plt.vlines(60,ymin=min(PyAvg_mvdr),ymax=max(PyAvg_mvdr),linestyles="dashed",colors="r")
+plt.vlines(60,ymin=0,ymax=1,linestyles="dashed",colors="r")
 
 plt.tight_layout()
 plt.show()

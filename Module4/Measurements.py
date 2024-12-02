@@ -8,7 +8,7 @@ from Functions import music, narrowband_Rx
 fs = 48000
 signal = wavaudioread("Module3\Recordings\d1source_60degreesv2.wav",fs)
 th_range = np.linspace(-np.pi/2,np.pi/2, 1000)
-nperseg = 250
+nperseg = 350
 N_Bins = 60
 
 
@@ -27,7 +27,7 @@ for i in range(1,N_Bins):
     Pytotal = Pytotal + Py
 PyAvg_music = Pytotal / N_Bins
 
-
+print(f_bins[1])
 plt.plot(th_range*180/np.pi,(abs(PyAvg_music)))
 plt.xlabel("Angle [deg]")
 plt.ylabel("Power ")
