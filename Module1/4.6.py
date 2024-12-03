@@ -30,14 +30,30 @@ ynorm = y/max(y)
 peaks, loveisintheair= signal.find_peaks(ynorm,0.4,distance = 9600)
 print(peaks)
 plt.plot(t,ynorm)
-plt.xlim(0,3)
+plt.xlim(7,10)
 plt.ylim(0,1)
 plt.show()
 peaksbaby =[]
 for i in range(len(peaks)-2):
     dif1 = peaks[i+1] - peaks[i]
-    dif2 = peaks[i+2] - peaks[i+1]
+    dif2 = peaks[i+2] - peaks[i+1] 
     if dif1>dif2:
         peaksbaby.append(("Peak at", peaks[i], "is S2"))
     else: peaksbaby.append(("Peak at", peaks[i], "is S1"))
+
+endpeaksbaby=[]
+if len(peaks) >= 3:  
+    dif3 = peaks[-2] - peaks[-3] 
+    dif4 = peaks[-1] - peaks[-2]  
+
+    if dif3 > dif4:
+        endpeaksbaby.append(("Peak at", peaks[-2], "is S2"))
+        endpeaksbaby.append(("Peak at", peaks[-1], "is S1"))
+    else:
+        endpeaksbaby.append(("Peak at", peaks[-2], "is S1"))
+        endpeaksbaby.append(("Peak at", peaks[-1], "is S2"))
+
+
+peaksbaby= np.concatenate((peaksbaby, endpeaksbaby))
+
 print(peaksbaby)
