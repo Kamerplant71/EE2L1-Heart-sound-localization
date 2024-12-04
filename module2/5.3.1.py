@@ -61,13 +61,19 @@ def input_signal(Ns,list_of_impulse_responses):
         x[i]=np.convolve(s[i],list_of_impulse_responses[i],mode = "full")
     return x
 
-
+def bpm_more_signals (Matrix_of_signals,BPM):
+    BPS = BPM/60
+    for signal in Matrix_of_signals:
+        Matrix_of_signals[signal] = np.concatenate((Matrix_of_signals[signal],np.zeros(BPS*Fs)))
+        Matrix_of_signals[signal] = np.tile(Matrix_of_signals[signal],25)
+        
 h_M = Impulse(0.02,45,1,0.01)
-h_T = Impulse(0.02,40,0.8,0.06)
-h_A = Impulse(0.02,40,0.7,0.74)
-h_P = Impulse(0.02,30,0.7,0.8)
+h_T = Impulse(0.02,40,0.8,0.04)
+h_A = Impulse(0.02,40,0.7,0.3)
+h_P = Impulse(0.02,30,0.7,0.33)
 
 h_M,h_T,h_A,h_P = zero_pad_arrays(h_M,h_T,h_A,h_P)
+
 # Valve positions (x, y, z) in cm
 Valve_locations = np.array([
     [6.37, 10.65, 6.00],  # Valve M
@@ -99,16 +105,24 @@ for m in range(6):  # For each microphone
         X[m] += Gain[v,m] * Delay_apply_sig
         #print(f"Mic {m}, Valve {v}, Signal: {X[m]}")
         #print(np.all( X[m]== 0))
+ 
+# Slice the array to exclude trailing zeros
+last_nonzero_index = np.max(np.nonzero(X[1]))
+trimmed_X = X[1][:last_nonzero_index + 1]
+X_new = np.zeros([6,len(trimmed_X)])
+for m in range(6):
+    X_new[m, :] = X[m][:last_nonzero_index + 1]
 
-for m in range(len(X)):
-    t = np.linspace (0,len(X[m])/Fs,len(X[m]))
+
+for m in range(len(X_new)):
+    t = np.linspace (0,len(X_new[m])/Fs,len(X_new[m]))
     plt.subplot(3,2,int(m+1))
-    plt.plot(t,X[m])
+    plt.plot(t,X_new[m])
     plt.xlabel("Time(s)")
     plt.ylabel("Magnitude")
     plt.title("signal")
     plt.xlim(0,1)
-    jaja = peaks_baby(Fs,X[m])
+    jaja = peaks_baby(Fs,X_new[m])
 
 
 plt.tight_layout()

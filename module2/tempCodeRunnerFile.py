@@ -1,6 +1,4 @@
-plt.plot(t,y)
-plt.xlabel("Time(s)")
-plt.ylabel("Magnitude")
-plt.title("Time plot SEE")
-plt.xlim(6,9)
-plt.ylim(0,0.005)
+def bpm_more_signals (Matrix_of_signals,BPM):
+#     BPS = BPM/60
+#     for signal in Matrix_of_signals:
+#         np.concatenate((Matrix_of_signals(signal),np.zeros()))
