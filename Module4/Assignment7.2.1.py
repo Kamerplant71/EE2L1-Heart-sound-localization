@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from Functions import a_lin, a_lin_multiplesources
+from Functions import a_lin, a_lin_multiplesources, narrowband_Rx
+from wavaudioread import wavaudioread
 
 
 def music(Rx, Q, M, th_range, d, v, f0):
@@ -30,17 +31,38 @@ f0= 140
 d = delta*v/f0
 
 #Calculate Rx
-sigma_n = 10**(-SNR/20); # std of the noise (SNR in dB)
-A = a_lin_multiplesources(theta0, M, d, v, f0); # source direction vectors
-A_H = A.conj().T
-R = A @ A_H # assume equal powered sources
-Rn = np.eye(M,M)*sigma_n**2; # noise covariance
-Rx = R + Rn # received data covariance matrix
+##sigma_n = 10**(-SNR/20); # std of the noise (SNR in dB)
+#A = a_lin_multiplesources(theta0, M, d, v, f0); # source direction vectors
+#A_H = A.conj().T
+#R = A @ A_H # assume equal powered sources
+#Rn = np.eye(M,M)*sigma_n**2; # noise covariance
+#Rx = R + Rn # received data covariance matrix
 
-Py_music = music(Rx,Q,M,th_range,d,v,f0)
+#Py_music = music(Rx,Q,M,th_range,d,v,f0)
+
+#Calculating Rx of our own data
+fs = 48000
+signal = wavaudioread("Module3\Recordings\d1source_0degrees.wav",fs)
+th_range = np.linspace(-np.pi/2,np.pi/2, 1000)
+nperseg = 100
+N_Bins = 50
+Q=1
+
+Mics = 6
+d = 0.1
+v=340
 
 
-plt.plot(th_range*180/np.pi,10*np.log10(abs(Py_music)))
+f_bins, Rx_all = narrowband_Rx(signal,nperseg,N_Bins)
+
+Pytotal = np.zeros(len(th_range))
+for i in range(1,N_Bins):
+    Py = music(Rx_all[i,:,:],Q,Mics,th_range,d,v,f_bins[i])
+    Pytotal = Pytotal + Py
+PyAvg_music = Pytotal / N_Bins
+
+
+plt.plot(th_range*180/np.pi,10*np.log10(abs(PyAvg_music)))
 plt.xlabel("Angle [deg]")
 plt.ylabel("Power ")
 plt.title("Spatial spectrum, MUSIC")
