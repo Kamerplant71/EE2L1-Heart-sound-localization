@@ -36,7 +36,7 @@ fs = 48000
 signal = wavaudioread("Module3\Recordings\d2sources_0degreesv2.wav",fs)
 th_range = np.linspace(-np.pi/2,np.pi/2, 1000)
 nperseg = 100
-N_Bins = 15
+N_Bins = 50
 
 Mics = 6
 d = 0.1

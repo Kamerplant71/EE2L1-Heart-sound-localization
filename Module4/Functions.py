@@ -85,7 +85,7 @@ def music(Rx, Q, M, th_range, d, v, f0):
     
     return Py
 
-def narrowband_Rx(signal,nperseg):
+def narrowband_Rx(signal,nperseg,N_Bins):
     Sx_all = []
     win = ('gaussian', 1e-2 * fs) # Gaussian with 0.01 s standard dev.
     SFT = ShortTimeFFT.from_window(win, fs, nperseg, noverlap=0,scale_to='magnitude', phase_shift=None)
@@ -102,7 +102,7 @@ def narrowband_Rx(signal,nperseg):
 
     #print(f_bins[N_Bins-1])
     Rx_all = []
-    for j in range(0,len(f_bins)):   #Loop for each frequency bin
+    for j in range(0,N_Bins):   #Loop for each frequency bin
         X = Sx_all[:, j, :]
         Rx = np.cov(X)
         #print(np.shape(Rx))

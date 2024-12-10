@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from Functions import a_lin, a_lin_multiplesources
+from Functions import a_lin, a_lin_multiplesources, narrowband_Rx
+from wavaudioread import wavaudioread
 
 
 def music(Rx, Q, M, th_range, d, v, f0):
