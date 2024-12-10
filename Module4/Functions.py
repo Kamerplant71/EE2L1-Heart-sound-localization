@@ -72,7 +72,7 @@ def datamodel(M,N,theta0,d,v,f0):
 
 def music(Rx, Q, M, th_range, d, v, f0):
     U, S , Vh = np.linalg.svd(Rx)
-    Un = U[:,Q:M-Q]
+    Un = U[:,Q:M]
     Un_H = Un.conj().T
 
     Py= np.zeros(len(th_range),dtype='complex')
@@ -111,3 +111,32 @@ def narrowband_Rx(signal,nperseg):
     Rx_all= np.array(Rx_all)    
 
     return f_bins, Rx_all
+
+def narrowband_Rx2(signal,nperseg):
+    Sx_all = []
+    win = ('gaussian', 1e-2 * fs) # Gaussian with 0.01 s standard dev.
+    SFT = ShortTimeFFT.from_window(win, fs, nperseg, noverlap=0,scale_to='magnitude', phase_shift=None)
+    f_bins = SFT.f
+
+    for i in range(0,8):            #Go through all mics to calculate Sx
+        if max(signal[:,i]) > 100:  #Only calculate Sx if signal actually has sound
+
+            Mic = signal[:,i]
+            Sx = SFT.stft(Mic)
+            Sx_all.append(Sx)
+
+    Sx_all = np.array(Sx_all)
+
+    #print(f_bins[N_Bins-1])
+    Rx_all = []
+    Xall = []
+    for j in range(0,len(f_bins)):   #Loop for each frequency bin
+        X = Sx_all[:, j, :]
+        Rx = np.matmul(X,X.conj().T)/len(signal[:,0])
+        #print(np.shape(Rx))
+        Rx_all.append(Rx)
+        Xall.append(X)
+        #print(np.shape(Rx_all))4
+    Rx_all= np.array(Rx_all)    
+    Xall= np.array(Xall)
+    return f_bins, Rx_all, Xall

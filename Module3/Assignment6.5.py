@@ -33,7 +33,7 @@ def narrowband_Rx(signal,nperseg,N_Bins):
     return f_bins, Rx_all
 
 fs = 48000
-signal = wavaudioread("Module3\Recordings\d1source_60degreesv2.wav",fs)
+signal = wavaudioread("Module3\Recordings\d2sources_0degreesv2.wav",fs)
 th_range = np.linspace(-np.pi/2,np.pi/2, 1000)
 nperseg = 100
 N_Bins = 15

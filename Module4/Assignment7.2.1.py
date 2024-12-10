@@ -5,7 +5,7 @@ from Functions import a_lin, a_lin_multiplesources
 
 def music(Rx, Q, M, th_range, d, v, f0):
     U, S , Vh = np.linalg.svd(Rx)
-    Un = U[:,Q:M-Q]
+    Un = U[:,Q:M]
     Un_H = Un.conj().T
 
     Py= np.zeros(len(th_range),dtype='complex')
@@ -37,10 +37,11 @@ R = A @ A_H # assume equal powered sources
 Rn = np.eye(M,M)*sigma_n**2; # noise covariance
 Rx = R + Rn # received data covariance matrix
 
+
 Py_music = music(Rx,Q,M,th_range,d,v,f0)
 
 
-plt.plot(th_range*180/np.pi,10*np.log10(abs(Py_music)))
+plt.plot(th_range*180/np.pi,abs(Py_music))
 plt.xlabel("Angle [deg]")
 plt.ylabel("Power ")
 plt.title("Spatial spectrum, MUSIC")
