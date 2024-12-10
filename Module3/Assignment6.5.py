@@ -72,6 +72,10 @@ plt.title("Spatial spectrum, Matched Beamformer")
 plt.vlines(60,ymin=0,ymax=1,linestyles="dashed",colors="r")
 plt.legend(["Power", "Expected angle"],loc= "upper left")
 
+#Peak angle
+for i in range(len(th_range)):
+    if PyAvg_mbf[i] == max(PyAvg_mbf):
+        print(th_range[i]*180/np.pi)
 
 plt.subplot(212)
 plt.plot(th_range*180/np.pi,abs(PyAvg_mvdr)/max(abs(PyAvg_mvdr)))
@@ -80,6 +84,12 @@ plt.ylabel("Power ")
 plt.title("Spatial spectrum, MVDR") 
 plt.vlines(60,ymin=0,ymax=1,linestyles="dashed",colors="r")
 plt.legend(["Power", "Expected angle"],loc= "upper left")
+#Peak angle
+for i in range(len(th_range)):
+    if PyAvg_mvdr[i] == max(PyAvg_mvdr):
+        print(th_range[i]*180/np.pi)
+
+
 
 plt.tight_layout()
 plt.show()
