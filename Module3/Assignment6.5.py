@@ -33,7 +33,10 @@ def narrowband_Rx(signal,nperseg,N_Bins):
     return f_bins, Rx_all
 
 fs = 48000
-signal = wavaudioread("Module3\Recordings\d2sources_0degreesv2.wav",fs)
+signal = wavaudioread("Module3\Recordings\d1source_60degrees.wav",fs)
+#signal1 = wavaudioread("Module3\Recordings\d1source_0degrees.wav",fs)
+#signal2 = wavaudioread("Module3\Recordings\d1source_20degrees.wav",fs)
+#signal = signal1[:623040,] + signal2
 th_range = np.linspace(-np.pi/2,np.pi/2, 1000)
 nperseg = 100
 N_Bins = 50
@@ -64,10 +67,11 @@ print(len(f_bins))
 print(f_bins[1])
 plt.rcParams['figure.figsize'] = [7 , 5]
 plt.rcParams['figure.dpi'] = 150
-plt.subplot(211)
+
+
 plt.plot(th_range*180/np.pi,abs(PyAvg_mbf)/max(abs(PyAvg_mbf)))
 plt.xlabel("Angle [deg]")
-plt.ylabel("Power ")
+plt.ylabel("Normalized Power")
 plt.title("Spatial spectrum, Matched Beamformer") 
 plt.vlines(60,ymin=0,ymax=1,linestyles="dashed",colors="r")
 plt.legend(["Power", "Expected angle"],loc= "upper left")
@@ -77,10 +81,12 @@ for i in range(len(th_range)):
     if PyAvg_mbf[i] == max(PyAvg_mbf):
         print(th_range[i]*180/np.pi)
 
-plt.subplot(212)
+plt.tight_layout()
+plt.show()
+
 plt.plot(th_range*180/np.pi,abs(PyAvg_mvdr)/max(abs(PyAvg_mvdr)))
 plt.xlabel("Angle [deg]")
-plt.ylabel("Power ")
+plt.ylabel("Normalized Power")
 plt.title("Spatial spectrum, MVDR") 
 plt.vlines(60,ymin=0,ymax=1,linestyles="dashed",colors="r")
 plt.legend(["Power", "Expected angle"],loc= "upper left")
