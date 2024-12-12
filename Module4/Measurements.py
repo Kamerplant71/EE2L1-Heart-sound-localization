@@ -24,12 +24,13 @@ f_bins, Rx_all, Xall = narrowband_Rx2(signal,nperseg)
 print(len(f_bins))
 Pytotal = np.zeros(len(th_range))
 N_Bins = len(f_bins)
-#Power for matched beamformer
-for i in range(1,N_Bins):
+
+#Averaging the power in case of a real signal
+for i in range(1,len(f_bins)):
     Py = music(Rx_all[i,:,:],Q,Mics,th_range,d,v,f_bins[i])
     Pytotal = Pytotal + Py
 
-PyAvg_music = Pytotal /N_Bins
+PyAvg_music = Pytotal /len(f_bins)
 
 plt.rcParams['figure.figsize'] = [7 , 6]
 plt.rcParams['figure.dpi'] = 150

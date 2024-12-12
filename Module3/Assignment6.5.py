@@ -49,7 +49,7 @@ f_bins, Rx_all = narrowband_Rx(signal,nperseg)
 
 Pytotal = np.zeros(len(th_range))
 
-#Power for matched beamformer
+#Averaging the power in case of a real signal
 for i in range(1,len(f_bins)):
     Py = matchedbeamformer(Rx_all[i,:,:],th_range,Mics,d,v,f_bins[i])
     Pytotal = Pytotal + Py
@@ -57,7 +57,7 @@ PyAvg_mbf = Pytotal / len(f_bins)
 
 Pytotal = np.zeros(len(th_range))
 
-#Power for mvdr
+#Averaging the power in case of a real signal
 for i in range(1,len(f_bins)):
     Py = mvdr(Rx_all[i,:,:],th_range,Mics,d,v,f_bins[i])
     Pytotal = Pytotal + Py
