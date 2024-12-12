@@ -26,45 +26,48 @@ def peaks_baby(Fs,x):
     pieces = np.array_split(y, 8)
     max_values = [np.max(piece) for piece in pieces]
     mean = np.mean(max_values)
+    
     for i in range(len(max_values)):
         if max_values[i]>1.5*mean:
-            pieces[i] = np.zeros(pieces[1]) #deze wat de flip
+            pieces[i] = np.zeros(len(pieces[1]))
     
     y_reconstructed = np.concatenate((pieces))
     ynorm = y_reconstructed/max(y_reconstructed)
-    peaks, loveisintheair= signal.find_peaks(y_reconstructed,0.2,distance = Fs/5)
-    
+    peaks, loveisintheair= signal.find_peaks(ynorm,0.4,distance = Fs/5)
+
     plt.plot(t,ynorm)
-    plt.xlim(0,3)
-    plt.ylim(0,1)
+    plt.xlim(7,10)
     plt.show()
-
+    # diffpeaksS1=[]
+    # diffpeaksS2=[]
+    diffpeaks=[]
     peaksbaby =[]
-    for i in range(len(peaks)-2):
-        dif1 = peaks[i+1] - peaks[i]
-        dif2 = peaks[i+2] - peaks[i+1]
-        if dif1>dif2:
-            peaksbaby.append(("Peak at", peaks[i]/Fs, " seconds is S2"))
-        else: peaksbaby.append(("Peak at", peaks[i]/Fs, "seconds is S1"))
+    for i in range(len(peaks)-1):
+        print(i)
+        diffpeaks.append(peaks[i+1] - peaks[i])
 
-        endpeaksbaby=[]
+    for i in range(len(diffpeaks)-1):
+        if diffpeaks[i]>diffpeaks[i+1]:
+            peaksbaby.append(("Peak at", np.round(peaks[i]/Fs,2), "seconds is S2"))
+        else: peaksbaby.append(("Peak at", np.round(peaks[i]/Fs,2), "seconds is S1"))
+
+    endpeaksbaby=[]
     if len(peaks) >= 3:  
-        dif3 = peaks[-2] - peaks[-3] 
-        dif4 = peaks[-1] - peaks[-2]  
+        diffpeaks[-1] = peaks[-2] - peaks[-3] 
+        diffpeaks[-2] = peaks[-1] - peaks[-2]  
 
-    if dif3 > dif4:
-        endpeaksbaby.append(("Peak at", peaks[-2]/Fs, "is S2"))
-        endpeaksbaby.append(("Peak at", peaks[-1]/Fs, "is S1"))
+    if diffpeaks[-1] > diffpeaks[-2]:
+        endpeaksbaby.append(("Peak at", np.round(peaks[-2]/Fs,2), "seconds is S2"))
+        endpeaksbaby.append(("Peak at", np.round(peaks[-1]/Fs,2), "seconds is S1"))
     else:
-        endpeaksbaby.append(("Peak at", peaks[-2]/Fs, "is S1"))
-        endpeaksbaby.append(("Peak at", peaks[-1]/Fs, "is S2"))
+        endpeaksbaby.append(("Peak at", np.round(peaks[-2]/Fs,2), "seconds is S1"))
+        endpeaksbaby.append(("Peak at", np.round(peaks[-1]/Fs,2), "seconds is S2"))
 
 
     peaksbaby= np.concatenate((peaksbaby, endpeaksbaby))
-
 
     print(peaksbaby)
     return peaksbaby
    
    
-hallo = peaks_baby(Fs2,x2)
+hallo = peaks_baby(Fs,x)
