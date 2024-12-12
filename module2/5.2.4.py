@@ -14,7 +14,7 @@ def Impulse(duration,frequency,relative_amplitude,delay):
     system = TransferFunction([0,0,omega*relative_amplitude],[1,2*a,a**2+omega**2])
     t, h_almost = signal.impulse(system) # impulse response
     print(t.shape)
-    h = np.concatenate((np.zeros(int(delay*Fs)),h_almost))
+    h = np.concatenate((np.zeros(int(delay*Fs)),h_almost)) 
     #t = np.linspace(0,len(t)+delay*Fs,len(h))
     #print(f"tconcatenated:{t.shape}")
     #print(t.shape)
@@ -52,17 +52,18 @@ htotal,Htotal,t,w = h_combine(h_M,h_T,h_A,h_P)
 
 plt.subplot(211)
 plt.plot(t,htotal)
-plt.xlabel("Time(s)")
+plt.xlabel("Time [s]")
 plt.ylabel("Magnitude")
 plt.title("Impulse response")
 #plt.xlim(0 ,3)
-plt.tight_layout()
+
 
 plt.subplot(212)
 plt.plot(w,Htotal)
-plt.xlabel("Frequency(Rad/s)")
+plt.xlabel("Frequency [Rad/s]")
 plt.ylabel("Magnitude")
 plt.title("Transfer function")
 #plt.xlim(0,20)
-plt.show()
+
 plt.tight_layout()
+plt.show()

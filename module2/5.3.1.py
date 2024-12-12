@@ -104,13 +104,13 @@ for m in range(len(X)):
     t = np.linspace (0,len(X[m])/Fs,len(X[m]))
     plt.subplot(3,2,int(m+1))
     plt.plot(t,X[m])
-    plt.xlabel("Time(s)")
+    plt.xlabel("Time [s]")
     plt.ylabel("Magnitude")
     plt.title("signal")
     plt.xlim(0,1)
     jaja = peaks_baby(Fs,X[m])
 
-
+print(np.shape(distances))
 plt.tight_layout()
 plt.show()
 #print(distances)
