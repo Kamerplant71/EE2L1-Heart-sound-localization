@@ -30,19 +30,52 @@ def peaks_baby(Fs,x):
     t= np.linspace(0,period*len(y),len(y))
     f= np.linspace(0,Fs, len(Y))
 
-    ynorm = y/max(y)
+    pieces = np.array_split(y, 8)
+    max_values = [np.max(piece) for piece in pieces]
+    mean = np.mean(max_values)
+    
+    for i in range(len(max_values)):
+        if max_values[i]>1.5*mean:
+            pieces[i] = np.zeros(len(pieces[1]))
+    
+    y_reconstructed = np.concatenate((pieces))
+    ynorm = y_reconstructed/max(y_reconstructed)
+    peaks, loveisintheair= signal.find_peaks(ynorm,0.4,distance = Fs/5)
 
-    peaks, loveisintheair= signal.find_peaks(ynorm,0.4,distance = 50)
-    print(peaks)
+    # plt.plot(t,ynorm)
+    # plt.xlim(7,10)
+    # plt.show()
+    diffpeaksS1=[]
+    diffpeaksS2=[]
+    diffpeaks=[]
     peaksbaby =[]
-    for i in range(len(peaks)-2):
-        dif1 = peaks[i+1] - peaks[i]
-        dif2 = peaks[i+2] - peaks[i+1]
-        if dif1>dif2:
-            peaksbaby.append(("Peak at", peaks[i], "is S2"))
-        else: peaksbaby.append(("Peak at", peaks[i], "is S1"))
-    print(peaksbaby)
+    for i in range(len(peaks)-1):
+        # print(i)
+        diffpeaks.append(peaks[i+1] - peaks[i])
+
+    for i in range(len(diffpeaks)-1):
+        if diffpeaks[i]>diffpeaks[i+1]:
+            peaksbaby.append(("Peak at", np.round(peaks[i]/Fs,2), "seconds is S2"))
+        else: peaksbaby.append(("Peak at", np.round(peaks[i]/Fs,2), "seconds is S1"))
+
+    endpeaksbaby=[]
+    if len(peaks) >= 3:  
+        diffpeaks[-1] = peaks[-2] - peaks[-3] 
+        diffpeaks[-2] = peaks[-1] - peaks[-2]  
+
+    if diffpeaks[-1] > diffpeaks[-2]:
+        endpeaksbaby.append(("Peak at", np.round(peaks[-2]/Fs,2), "seconds is S2"))
+        endpeaksbaby.append(("Peak at", np.round(peaks[-1]/Fs,2), "seconds is S1"))
+    else:
+        endpeaksbaby.append(("Peak at", np.round(peaks[-2]/Fs,2), "seconds is S1"))
+        endpeaksbaby.append(("Peak at", np.round(peaks[-1]/Fs,2), "seconds is S2"))
+
+
+    peaksbaby= np.concatenate((peaksbaby, endpeaksbaby))
+
+    # print(peaksbaby)
     return peaksbaby
+   
 
 
 def zero_pad_arrays(t1,t2,t3,t4):
@@ -61,11 +94,25 @@ def input_signal(Ns,list_of_impulse_responses):
         x[i]=np.convolve(s[i],list_of_impulse_responses[i],mode = "full")
     return x
 
-def bpm_more_signals (Matrix_of_signals,BPM):
-    BPS = BPM/60
-    for signal in Matrix_of_signals:
-        Matrix_of_signals[signal] = np.concatenate((Matrix_of_signals[signal],np.zeros(BPS*Fs)))
-        Matrix_of_signals[signal] = np.tile(Matrix_of_signals[signal],25)
+# def bpm_more_signals (Matrix_of_signals,BPM):
+#     BPS = BPM/60
+#     X = np.zeros([6,len(np.tile(np.concatenate((Matrix_of_signals[1],np.zeros(int(BPS*Fs)))),25))])
+#     for i in range(len(Matrix_of_signals)):
+#         X[i].append(np.tile(np.concatenate((Matrix_of_signals[i],np.zeros(int(BPS*Fs))))),25)
+#     return X
+
+def bpm_more_signals(Matrix_of_signals, BPM):
+    BPS = BPM / 60  # Convert BPM to BPS
+     # Initialize a matrix with zeros
+    X = np.zeros((6, (len(Matrix_of_signals[0]) + int(BPS * Fs))*10))
+    
+    for i in range(len(Matrix_of_signals)):
+        # Concatenate and tile signals to replace zeros
+        signal_extension = np.tile(np.concatenate((Matrix_of_signals[i], np.zeros(int(BPS * Fs)))), 10)
+        # Update row i in matrix X
+        X[i] = signal_extension  # Ensure dimensions match
+
+    return X
         
 h_M = Impulse(0.02,45,1,0.01)
 h_T = Impulse(0.02,40,0.8,0.04)
@@ -113,20 +160,31 @@ X_new = np.zeros([6,len(trimmed_X)])
 for m in range(6):
     X_new[m, :] = X[m][:last_nonzero_index + 1]
 
+X_BPM = bpm_more_signals(X_new,60)
 
-for m in range(len(X_new)):
-    t = np.linspace (0,len(X_new[m])/Fs,len(X_new[m]))
+# for m in range(len(X_new)):
+#     t = np.linspace (0,len(X_new[m])/Fs,len(X_new[m]))
+#     plt.subplot(3,2,int(m+1))
+#     plt.plot(t,X_new[m])
+#     plt.xlabel("Time(s)")
+#     plt.ylabel("Magnitude")
+#     plt.title("signal")
+#     plt.xlim(0,1)
+#     jaja = peaks_baby(Fs,X_new[m])
+
+for m in range(len(X_BPM)):
+    t = np.linspace (0,len(X_BPM[m])/Fs,len(X_BPM[m]))
     plt.subplot(3,2,int(m+1))
-    plt.plot(t,X_new[m])
+    plt.plot(t,X_BPM[m])
     plt.xlabel("Time(s)")
     plt.ylabel("Magnitude")
     plt.title("signal")
-    plt.xlim(0,1)
-    jaja = peaks_baby(Fs,X_new[m])
-
+    plt.xlim(0,3)
+    jaja = peaks_baby(Fs,X_BPM[m])
 
 plt.tight_layout()
 plt.show()
 #print(distances)
 #print(delays)
 #print(np.all(Delay_apply_sig == 0))  # Returns True if all elements are zero
+print(np.shape(X_BPM))
