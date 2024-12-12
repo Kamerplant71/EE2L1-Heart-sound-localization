@@ -6,7 +6,7 @@ from Functions import music, narrowband_Rx2
 
 
 fs = 48000
-signal1 = wavaudioread("Module3\Recordings\d1source_0degrees.wav",fs)
+signal1= wavaudioread("Module3\Recordings\d1source_0degrees.wav",fs)
 signal2 = wavaudioread("Module3\Recordings\d1source_20degrees.wav",fs)
 th_range = np.linspace(-np.pi/2,np.pi/2, 5000)
 nperseg = 100
@@ -31,17 +31,19 @@ for i in range(1,N_Bins):
 
 PyAvg_music = Pytotal /N_Bins
 
-plt.rcParams['figure.figsize'] = [7 , 5]
+plt.rcParams['figure.figsize'] = [7 , 6]
 plt.rcParams['figure.dpi'] = 150
 
 print(f_bins[1])
 plt.plot(th_range*180/np.pi,(abs(PyAvg_music))/max(abs(PyAvg_music)))
-plt.xlabel("Angle [deg]")
-plt.ylabel("Normalized Power")
-plt.title("Spatial spectrum, MUSIC")
+plt.xlabel("Angle [deg]",fontsize=20)
+plt.ylabel("Normalized Power",fontsize=20)
+plt.title("Spatial spectrum, MUSIC",fontsize=20)
 plt.vlines(0,ymin=0,ymax=1,linestyles="dashed",colors="r")
 plt.vlines(20,ymin=0,ymax=1,linestyles="dashed",colors="r")
-plt.legend(["Power", "Expected angle"],loc= "upper left")
+plt.legend(["Power", "Expected angle"],loc= "upper left",fontsize=16)
+plt.yticks(fontsize=16)
+plt.xticks(fontsize=16)
 
 for i in range(len(th_range)):
     if PyAvg_music[i] == max(PyAvg_music):
