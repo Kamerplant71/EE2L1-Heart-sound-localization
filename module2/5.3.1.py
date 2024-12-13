@@ -152,7 +152,7 @@ for m in range(6):  # For each microphone
         X[m] += Gain[v,m] * Delay_apply_sig
         #print(f"Mic {m}, Valve {v}, Signal: {X[m]}")
         #print(np.all( X[m]== 0))
- 
+print(delays) 
 # Slice the array to exclude trailing zeros
 last_nonzero_index = np.max(np.nonzero(X[1]))
 trimmed_X = X[1][:last_nonzero_index + 1]
@@ -176,11 +176,40 @@ for m in range(len(X_BPM)):
     t = np.linspace (0,len(X_BPM[m])/Fs,len(X_BPM[m]))
     plt.subplot(3,2,int(m+1))
     plt.plot(t,X_BPM[m])
-    plt.xlabel("Time(s)")
+    plt.xlabel("Time [s]")
     plt.ylabel("Magnitude")
     plt.title("signal")
-    plt.xlim(0,3)
+    plt.xlim(0,2)
     jaja = peaks_baby(Fs,X_BPM[m])
+
+mic_1_signal = X_BPM[0]
+mic_2_signal = X_BPM[1]
+mic_3_signal = X_BPM[2]
+mic_4_signal = X_BPM[3]
+mic_5_signal = X_BPM[4]
+mic_6_signal = X_BPM[5]
+
+# # Create a time vector
+t = np.linspace(0, len(mic_2_signal) / Fs, len(mic_2_signal))
+
+# # Plot both signals in the same graph
+plt.figure(figsize=(10, 6))
+plt.plot(t, mic_1_signal, label="Mic 0 Signal", color="blue")
+plt.plot(t, mic_2_signal, label="Mic 1 Signal", color="orange")
+# plt.plot(t, mic_3_signal, label="Mic 2 Signal", color="purple")
+# plt.plot(t, mic_4_signal, label="Mic 3 Signal", color="green")
+# plt.plot(t, mic_5_signal, label="Mic 4 Signal", color="grey")
+# plt.plot(t, mic_6_signal, label="Mic 5 Signal", color="yellow")
+
+# # Add annotations for delay (optional)
+plt.xlabel("Time [s]")
+plt.ylabel("Magnitude")
+plt.title("Signals from Two Microphones Showing Delay")
+plt.legend()
+plt.xlim(0.3, 0.5)  # Adjust x-axis range as needed
+plt.grid(True)
+plt.tight_layout()
+plt.show()
 
 plt.tight_layout()
 plt.show()
