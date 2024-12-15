@@ -33,11 +33,11 @@ def peaks_baby(Fs,x):
     
     y_reconstructed = np.concatenate((pieces))
     ynorm = y_reconstructed/max(y_reconstructed)
-    peaks, loveisintheair= signal.find_peaks(ynorm,0.4,distance = Fs/5)
+    peaks, loveisintheair= signal.find_peaks(ynorm,0.2,distance = Fs/5)
 
-    plt.plot(t,ynorm)
-    plt.xlim(7,10)
-    plt.show()
+    # plt.plot(t,ynorm)
+    # plt.xlim(7,10)
+    # plt.show()
     # diffpeaksS1=[]
     # diffpeaksS2=[]
     diffpeaks=[]
@@ -66,8 +66,24 @@ def peaks_baby(Fs,x):
 
     peaksbaby= np.concatenate((peaksbaby, endpeaksbaby))
 
-    print(peaksbaby)
+    # Plot the signal and annotate peaks
+    plt.figure(figsize=(12, 6))
+    plt.plot(t, ynorm)  # Plot without label
+    plt.scatter(t[peaks], ynorm[peaks], color="red")  # Plot peaks without label
+
+    # Annotate each peak with only 'S1' or 'S2'
+    for peak_info, peak_idx in zip(peaksbaby, peaks):
+        label = peak_info[-1].split()[-1]  # Extract only 'S1' or 'S2'
+        plt.text(t[peak_idx], ynorm[peak_idx] + 0.02, label, fontsize=9, color="blue", ha="center")
+
+    #plt.xlim(0, 10)
+    plt.xlabel("Time [s]", fontsize=16)
+    plt.ylabel("Amplitude", fontsize=16)
+    plt.title("Heartsound peaks with S1 and S2")
+    plt.grid(True)  # Optional: Keep the grid for better visualization
+    plt.show()
+    #print(peaksbaby)
     return peaksbaby
    
    
-hallo = peaks_baby(Fs,x)
+hallo = peaks_baby(Fs2,x2)
