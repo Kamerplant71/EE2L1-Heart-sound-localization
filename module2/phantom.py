@@ -5,6 +5,7 @@ from scipy import signal
 from scipy.io import wavfile
 from scipy.fft import fft,ifft
 from IPython.display import Audio
+from playsound import playsound
 
 # Sampling frequency
 Fs = 48000  # Standard audio sampling rate
@@ -42,4 +43,4 @@ h_dual = np.asarray(h_dual, dtype=np.float32)  # Ensure proper data type
 wavfile.write("S1.wav", Fs, h_dual)
 
 # Play the WAV file
-Audio("S1.wav",autoplay=False, rate=Fs)
+Audio("S1.wav",autoplay=True, rate=Fs)
