@@ -95,7 +95,7 @@ plt.rcParams['figure.figsize'] = [7, 6]
 plt.rcParams['figure.dpi'] = 150
 
 #plt.subplot(311)
-'''
+
 plt.plot(th_range*180/np.pi,abs(P_mbf))
 plt.xlabel("Angle [deg]", fontsize =16)
 plt.xticks(fontsize = 16)
@@ -107,7 +107,7 @@ plt.vlines(0,ymin=min(P_mbf),ymax=max(P_mbf),linestyles="dashed",colors="r")
 plt.vlines(15,ymin=min(P_mbf),ymax=max(P_mbf),linestyles="dashed",colors="r")
 plt.legend(['Power','Expected angle'],fontsize =16)
 plt.title("Spatial spectrum, matched beamformer", fontsize =16)
-
+plt.show()
 
 
 #plt.subplot(312)
@@ -120,8 +120,8 @@ plt.vlines(0,ymin=min(P_mvdr),ymax=max(P_mvdr),linestyles="dashed",colors="r")
 plt.vlines(15,ymin=min(P_mvdr),ymax=max(P_mvdr),linestyles="dashed",colors="r")
 plt.legend(['Power','Expected angle'],fontsize =16)
 plt.title("Spatial spectrum, MVDR", fontsize= 16) 
+plt.show()
 
-'''
 
 plt.plot(th_range*180/np.pi,abs(W_opt))
 plt.xlabel("Angle [deg]")

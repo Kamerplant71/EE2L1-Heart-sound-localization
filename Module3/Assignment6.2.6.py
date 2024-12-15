@@ -13,7 +13,7 @@ Delta = 1/2
 f0 = 500
 v=340
 d = v*Delta/f0
-Direction_S = 60 / 180 * np.pi
+Direction_S = 25 / 180 * np.pi
 
 
 #Create a_theta0 
