@@ -1,6 +1,0 @@
-plt.plot(t,y)
-plt.xlabel("Time(s)")
-plt.ylabel("Magnitude")
-plt.title("Time plot SEE")
-plt.xlim(6,9)
-plt.ylim(0,0.005)
