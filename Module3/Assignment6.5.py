@@ -5,7 +5,7 @@ from wavaudioread import wavaudioread
 from Functions import mvdr, matchedbeamformer
 
 
-def narrowband_Rx(signal,nperseg,N_Bins):
+def narrowband_Rx(signal,nperseg):
     Sx_all = []
     win = ('gaussian', 1e-2 * fs) # Gaussian with 0.01 s standard dev.
     SFT = ShortTimeFFT.from_window(win, fs, nperseg, noverlap=0,scale_to='magnitude', phase_shift=None)
@@ -22,9 +22,9 @@ def narrowband_Rx(signal,nperseg,N_Bins):
 
     #print(f_bins[N_Bins-1])
     Rx_all = []
-    for j in range(0,N_Bins):   #Loop for each frequency bin
+    for j in range(0,len(f_bins)):   #Loop for each frequency bin
         X = Sx_all[:, j, :]
-        Rx = np.cov(X)
+        Rx = np.cov(X)/len(signal[:,0])
         #print(np.shape(Rx))
         Rx_all.append(Rx)
         #print(np.shape(Rx_all))
@@ -33,17 +33,17 @@ def narrowband_Rx(signal,nperseg,N_Bins):
     return f_bins, Rx_all
 
 fs = 48000
-signal = wavaudioread("Module3\Recordings\d2sources_0degreesv2.wav",fs)
+signal = wavaudioread("Module3\Recordings\d1source_60degreesv2.wav",fs)
 th_range = np.linspace(-np.pi/2,np.pi/2, 1000)
 nperseg = 100
-N_Bins = 50
+
 
 Mics = 6
 d = 0.1
 v=340
 
-f_bins, Rx_all = narrowband_Rx(signal,nperseg,N_Bins)
-
+f_bins, Rx_all = narrowband_Rx(signal,nperseg)
+N_Bins = len(f_bins)
 Pytotal = np.zeros(len(th_range))
 
 #Power for matched beamformer
