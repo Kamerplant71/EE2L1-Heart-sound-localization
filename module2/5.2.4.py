@@ -38,9 +38,9 @@ h_M = Impulse(0.02,50,1,0.01)
 h_T = Impulse(0.02,150,0.5,0.04)
 h_A = Impulse(0.02,50,0.5,0.3)
 h_P = Impulse(0.02,30,0.4,0.33)
-
+print(np.shape(h_M),np.shape(h_T),np.shape(h_A),np.shape(h_P),)
 h_M,h_T,h_A,h_P = zero_pad_arrays(h_M,h_T,h_A,h_P)
-
+print(np.shape(h_M),np.shape(h_T),np.shape(h_A),np.shape(h_P),)
 def h_combine(h1,h2,h3,h4):
     htotal = h1+h2+h3+h4
     Htotal = fft(htotal)

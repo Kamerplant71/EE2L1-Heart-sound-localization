@@ -90,6 +90,7 @@ def input_signal(Ns,list_of_impulse_responses):
     s = [None]*len(list_of_impulse_responses)
     x = [None]*len(list_of_impulse_responses)
     for i in range(len(list_of_impulse_responses)):
+
         s[i]=np.concatenate((np.random.randn(Ns),np.zeros(len(list_of_impulse_responses[i]-Ns))))
         x[i]=np.convolve(s[i],list_of_impulse_responses[i],mode = "full")
     return x
@@ -149,6 +150,7 @@ X = np.zeros([6,len(valve_signals[1])])
 for m in range(6):  # For each microphone
     for v in range(4):  # For each valve
         Delay_apply_sig = np.concatenate((np.zeros(int(delays[v,m])*Fs),valve_signals[v]))
+        print(delays[v,m])
         X[m] += Gain[v,m] * Delay_apply_sig
         #print(f"Mic {m}, Valve {v}, Signal: {X[m]}")
         #print(np.all( X[m]== 0))
@@ -217,4 +219,4 @@ plt.show()
 #print(distances)
 #print(delays)
 #print(np.all(Delay_apply_sig == 0))  # Returns True if all elements are zero
-print(np.shape(X_BPM))
+#print(distances)
