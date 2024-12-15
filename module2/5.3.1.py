@@ -182,34 +182,35 @@ for m in range(len(X_BPM)):
     plt.xlim(0,2)
     jaja = peaks_baby(Fs,X_BPM[m])
 
-mic_1_signal = X_BPM[0]
-mic_2_signal = X_BPM[1]
-mic_3_signal = X_BPM[2]
-mic_4_signal = X_BPM[3]
-mic_5_signal = X_BPM[4]
-mic_6_signal = X_BPM[5]
+# mic_1_signal = X_BPM[0]
+# mic_2_signal = X_BPM[1]
+# mic_3_signal = X_BPM[2]
+# mic_4_signal = X_BPM[3]
+# mic_5_signal = X_BPM[4]
+# mic_6_signal = X_BPM[5]
 
-# # Create a time vector
-t = np.linspace(0, len(mic_2_signal) / Fs, len(mic_2_signal))
+# # # Create a time vector
+# t = np.linspace(0, len(mic_2_signal) / Fs, len(mic_2_signal))
 
-# # Plot both signals in the same graph
-plt.figure(figsize=(10, 6))
-plt.plot(t, mic_1_signal, label="Mic 0 Signal", color="blue")
-plt.plot(t, mic_2_signal, label="Mic 1 Signal", color="orange")
-# plt.plot(t, mic_3_signal, label="Mic 2 Signal", color="purple")
-# plt.plot(t, mic_4_signal, label="Mic 3 Signal", color="green")
-# plt.plot(t, mic_5_signal, label="Mic 4 Signal", color="grey")
-# plt.plot(t, mic_6_signal, label="Mic 5 Signal", color="yellow")
+# # # Plot both signals in the same graph
+# plt.figure(figsize=(10, 6))
+# plt.plot(t, mic_1_signal, label="Mic 0 Signal", color="blue")
+# plt.plot(t, mic_2_signal, label="Mic 1 Signal", color="orange")
+# # plt.plot(t, mic_3_signal, label="Mic 2 Signal", color="purple")
+# # plt.plot(t, mic_4_signal, label="Mic 3 Signal", color="green")
+# # plt.plot(t, mic_5_signal, label="Mic 4 Signal", color="grey")
+# # plt.plot(t, mic_6_signal, label="Mic 5 Signal", color="yellow")
 
-# # Add annotations for delay (optional)
-plt.xlabel("Time [s]")
-plt.ylabel("Magnitude")
-plt.title("Signals from Two Microphones Showing Delay")
-plt.legend()
-plt.xlim(0.3, 0.5)  # Adjust x-axis range as needed
-plt.grid(True)
-plt.tight_layout()
-plt.show()
+# # # Add annotations for delay (optional)
+# plt.xlabel("Time [s]", fontsize=16)
+# plt.ylabel("Magnitude",fontsize=16)
+# plt.title("Signals from Two Microphones Showing Delay",fontsize=16)
+# plt.legend()
+# plt.xlim(0.29, 0.37)  # Adjust x-axis range as needed
+# plt.grid(True)
+# plt.tight_layout()
+# plt.show()
+
 
 plt.tight_layout()
 plt.show()
