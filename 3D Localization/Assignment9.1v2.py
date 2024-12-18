@@ -128,17 +128,27 @@ plt.show()
 '''
 fig, axes = plt.subplots(2, 5, figsize=(15, 8), constrained_layout=True)
 axes = axes.flatten()
+py = []
 
-for z_index, z in enumerate(np.linspace(1, 10, 10) / 100):  # z ranges from 0 to 10
-    xyz = create_points(x_steps, y_steps, xmax, ymax, z)
+z = np.linspace(1,10,10)/100
+
+
+for i in range(len(z)):  # z ranges from 0 to 10
+    xyz = create_points(x_steps, y_steps, xmax, ymax, z[i])
     
     # Compute the MUSIC spectrum for the current z-plane
     p = music_z(Rx, Q, M, xyz, v, f0, mic_positions, x_steps, y_steps)
-    
+    print(np.shape(p))
+    py.append(p)
+py = np.array(py)
+print(np.shape(py))    
+pymax = np.max(py)
     # Plot the result
-    ax = axes[z_index]
-    im = ax.imshow(np.abs(p), extent=(0, xmax * 100, 0, ymax * 100), origin='lower')
-    ax.set_title(f"z = {z * 100:.1f} cm")
+    
+for i in range(len(z)):
+    ax = axes[i]
+    im = ax.imshow(np.abs(py[i,:,:])/abs(pymax), extent=(0, xmax * 100, 0, ymax * 100), origin='lower')
+    ax.set_title(f"z = {z[i] * 100:.1f} cm")
     ax.set_xlabel("x (cm)")
     ax.set_ylabel("y (cm)")
 
