@@ -35,7 +35,28 @@ def mvdr_z(Rx, M, xyz_points, v, f0, mic_positions,xsteps,ysteps):
         py = 1/pyd
         Py[i]= py[0][0]
 
-    Py = np.reshape(Py,(x_steps,y_steps))
+    Py = np.reshape(Py,(xsteps,ysteps))
+
+    return Py
+
+
+def music_z(Rx, Q, M, xyz_points, v, f0, mic_positions, xsteps, ysteps):
+    U, S , V_H = np.linalg.svd(Rx)
+    Un = U[:,Q:M]
+    Un_H = Un.conj().T
+
+    Py = np.zeros((xsteps*ysteps,1),dtype = "complex")
+    
+    for i in range(0,len(xyz_points)):
+        a = a_z(xyz_points[i,:],mic_positions,M,v,f0)
+#       print(xyz_points[i,:])
+        a_z_H = a.conj().T
+    
+        pyd =np.matmul(np.matmul(np.matmul(a_z_H, Un),Un_H),a)
+        py = 1/pyd
+        Py[i]= py[0][0]
+
+    Py = np.reshape(Py,(xsteps,ysteps))
 
     return Py
 
@@ -87,16 +108,41 @@ Rx = R + Rn # received data covariance matrix
 x_steps = y_steps = 200
 xmax = ymax = 20 /100
 z = 10 / 100
+Q=1
 
 
 xyz = create_points(x_steps,y_steps,xmax,ymax,z)
 print(xyz)
-p = mvdr_z(Rx, M, xyz, v, f0, mic_positions,x_steps,y_steps)
+#p = music_z(Rx, Q, M, xyz, v, f0, mic_positions,x_steps,y_steps)
 
+
+'''
 # Plot using imshow
 plt.imshow(abs(p), extent=(0, xmax*100, 0, ymax*100), origin='lower', aspect='auto')
 plt.colorbar(label="Power")
 plt.xlabel('X Position')
 plt.ylabel('Y Position')
 plt.title('MVDR Power Pattern')
+plt.show()
+
+'''
+fig, axes = plt.subplots(2, 5, figsize=(15, 8), constrained_layout=True)
+axes = axes.flatten()
+
+for z_index, z in enumerate(np.linspace(1, 10, 10) / 100):  # z ranges from 0 to 10
+    xyz = create_points(x_steps, y_steps, xmax, ymax, z)
+    
+    # Compute the MUSIC spectrum for the current z-plane
+    p = music_z(Rx, Q, M, xyz, v, f0, mic_positions, x_steps, y_steps)
+    
+    # Plot the result
+    ax = axes[z_index]
+    im = ax.imshow(np.abs(p), extent=(0, xmax * 100, 0, ymax * 100), origin='lower')
+    ax.set_title(f"z = {z * 100:.1f} cm")
+    ax.set_xlabel("x (cm)")
+    ax.set_ylabel("y (cm)")
+
+# Add a colorbar to the figure
+fig.colorbar(im, ax=axes, orientation='horizontal', fraction=0.05, pad=0.1)
+plt.suptitle("MUSIC Spectrum at Different z-Planes", fontsize=16)
 plt.show()
