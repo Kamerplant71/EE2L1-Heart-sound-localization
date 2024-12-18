@@ -41,6 +41,25 @@ def mvdr_z2(Rx, M, xyz_points, v, f0, mic_positions,length):
 
     return Py
 
+def music_z2(Rx, Q, M, xyz_points, v, f0, mic_positions, length):
+    U, S , V_H = np.linalg.svd(Rx)
+    Un = U[:,Q:M]
+    Un_H = Un.conj().T
+
+    Py = np.zeros((length),dtype = "complex")
+    
+    for i in range(0,len(xyz_points)):
+        a = a_z(xyz_points[i,:],mic_positions,M,v,f0)
+#       print(xyz_points[i,:])
+        a_z_H = a.conj().T
+    
+        pyd =np.matmul(np.matmul(np.matmul(a_z_H, Un),Un_H),a)
+        py = 1/pyd
+        Py[i]= py[0][0]
+
+
+    return Py
+
 def narrowband_Rx(signal,nperseg):
     Sx_all = []
     win = ('gaussian', 1e-2 * fs) # Gaussian with 0.01 s standard dev.
@@ -93,6 +112,7 @@ nperseg = 200
 Mics = 6
 d = 0.1
 v=340
+Q = 2
 mic_positions =   np.array([[-0.25,0,0],
                             [-0.15,0,0],
                             [-0.05,0,0],
@@ -104,7 +124,7 @@ th_range= np.linspace(-np.pi/2,np.pi/2, 1000)
 xyz = conversion_th_xyz(th_range,8)
 f_bins, Rx_all = narrowband_Rx(signal,nperseg)
 
-
+# Calculation MVDR
 Pytotal = np.zeros(len(th_range))
 
 for i in range(1,len(f_bins)):
@@ -116,10 +136,29 @@ Py_norm = Pytotal /max(Pytotal)
 plt.plot(th_range*180/np.pi,abs(Py_norm))
 plt.xlabel("Angle [deg]")
 plt.ylabel("Normalized Power")
-plt.title("Spatial spectrum, Matched Beamformer") 
+plt.title("Spatial spectrum, MVDR") 
 #plt.vlines(0,ymin=0,ymax=1,linestyles="dashed",colors="r")
 #plt.legend(["Power", "Expected angle"],loc= "upper left", fontsize = 16)
 #plt.yticks(fontsize=16)
 #plt.xticks(fontsize=16)
 plt.show()
 
+
+#Calculation Power MUSIC
+
+
+Pytotal = np.zeros(len(th_range))
+for i in range(1,len(f_bins)):
+    Py = music_z2(Rx_all[i,:,:],Q,Mics,xyz,v,f_bins[i],mic_positions,len(th_range))
+    Pytotal = Pytotal + Py
+
+Py_norm
+plt.plot(th_range*180/np.pi,abs(Pytotal))
+plt.xlabel("Angle [deg]")
+plt.ylabel("Normalized Power")
+plt.title("Spatial spectrum, MUSIC") 
+#plt.vlines(0,ymin=0,ymax=1,linestyles="dashed",colors="r")
+#plt.legend(["Power", "Expected angle"],loc= "upper left", fontsize = 16)
+#plt.yticks(fontsize=16)
+#plt.xticks(fontsize=16)
+plt.show()
