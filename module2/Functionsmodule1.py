@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import butter, spectrogram
+from scipy.signal import butter, spectrogram,TransferFunction
 from scipy import signal
 import math
 

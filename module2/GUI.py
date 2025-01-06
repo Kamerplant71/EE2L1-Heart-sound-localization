@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from Functionsmodule1 import peaks_baby
+from Functionsmodule1 import peaks_baby, impulse, zero_pad_arrays, h_combine, input_signal, bpm_more_signals, ch3
 
 
 def handle_action(action=None):
@@ -9,7 +9,8 @@ def handle_action(action=None):
     distance = e2.get()
     if action:
         print(action)
-    print(f"FS: {FS}, Distance: {distance}")  # Optional, to debug the retrieved values.
+    
+    
 
 master = tk.Tk()
 master.title("Heartbeat")
