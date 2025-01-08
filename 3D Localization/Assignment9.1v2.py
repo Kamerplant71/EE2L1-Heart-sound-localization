@@ -89,9 +89,13 @@ mic_positions= np.array( [[2.5 ,5.0, 0],
 v=60
 f0= 150
 
-s_position= np.array([10,5,15]) / 100
+#s_position= np.array([10,5,15]) / 100
 
-s_positions = np.array([[15,10,3],[5,5,6]])/100
+<<<<<<< HEAD
+
+=======
+s_position = np.array([[5, 7.5 ,12],[5,15,18]]) /100
+>>>>>>> c6f3606296911febf1a6643ab1ebc98729974671
 
 M=6
 
@@ -99,14 +103,23 @@ M=6
 
 sigma_n = 10**(-SNR/20); # std of the noise (SNR in dB)
 A = a_z_multiplesources(s_positions, mic_positions, M, v , f0); # source direction vectors
+=======
+A = a_z_multiplesources(s_position, mic_positions, M, v , f0); # source direction vectors
+>>>>>>> c6f3606296911febf1a6643ab1ebc98729974671
 A_H = A.conj().T
 R = A @ A_H # assume equal powered sources
 Rn = np.eye(M,M)*sigma_n**2; # noise covariance
 Rx = R + Rn # received data covariance matrix
 
 
+<<<<<<< HEAD
 x_steps = y_steps = 50
 xmax = ymax = 20 /100
+=======
+x_steps = y_steps = 100
+xmax = 10 /100
+ymax = 20 /100
+>>>>>>> c6f3606296911febf1a6643ab1ebc98729974671
 z = 10 / 100
 Q=2
 
@@ -130,7 +143,11 @@ fig, axes = plt.subplots(2, 5, figsize=(15, 8), constrained_layout=True)
 axes = axes.flatten()
 py = []
 
+<<<<<<< HEAD
 z = np.linspace(1,10,10)/100
+=======
+z = np.linspace(11,20,10)/100
+>>>>>>> c6f3606296911febf1a6643ab1ebc98729974671
 
 
 for i in range(len(z)):  # z ranges from 0 to 10
@@ -148,7 +165,11 @@ pymax = np.max(py)
     
 for i in range(len(z)):
     ax = axes[i]
+<<<<<<< HEAD
     im = ax.imshow(np.abs(py[i,:,:])/abs(pymax), extent=(0, xmax * 100, 0, ymax * 100), origin='lower')
+=======
+    im = ax.imshow(np.abs(py[i,:,:])/abs(pymax), extent=(0, xmax * 100, 0, ymax * 100), vmin =0, vmax = 1, origin='lower')
+>>>>>>> c6f3606296911febf1a6643ab1ebc98729974671
     ax.set_title(f"z = {z[i] * 100:.1f} cm")
     ax.set_xlabel("x (cm)")
     ax.set_ylabel("y (cm)")
