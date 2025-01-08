@@ -91,7 +91,7 @@ f0= 150
 
 #s_position= np.array([10,5,15]) / 100
 
-s_position = np.array([[5, 7.5 ,15],[5,15,15]]) /100
+s_position = np.array([[5, 7.5 ,12],[5,15,18]]) /100
 
 M=6
 
@@ -105,7 +105,7 @@ Rn = np.eye(M,M)*sigma_n**2; # noise covariance
 Rx = R + Rn # received data covariance matrix
 
 
-x_steps = y_steps = 50
+x_steps = y_steps = 100
 xmax = 10 /100
 ymax = 20 /100
 z = 10 / 100
@@ -148,7 +148,7 @@ pymax = np.max(py)
     
 for i in range(len(z)):
     ax = axes[i]
-    im = ax.imshow(np.abs(py[i,:,:])/abs(pymax), extent=(0, xmax * 100, 0, ymax * 100), origin='lower')
+    im = ax.imshow(np.abs(py[i,:,:])/abs(pymax), extent=(0, xmax * 100, 0, ymax * 100), vmin =0, vmax = 1, origin='lower')
     ax.set_title(f"z = {z[i] * 100:.1f} cm")
     ax.set_xlabel("x (cm)")
     ax.set_ylabel("y (cm)")
