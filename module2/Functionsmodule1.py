@@ -154,3 +154,31 @@ def ch3(x,y,epsi):
     h = np.real(ifft(H))   # ensure the result is real
     h = h[0:L]    # optional: truncate to length Lhat (L is not reliable?)
     return h
+
+def SEE_plot(Fs,x):
+    period = 1/Fs
+    xn= x/max(abs(x))
+    xi = xn**2
+    xi = xi + 1e-10
+    E=-(xi *np.log10(xi))
+    b, a = butter(2, [15/24000], btype='low')
+    y = signal.lfilter(b,a,E) #SEE envolope
+
+
+    #Y= fft(y)
+    t= np.linspace(0,period*len(y),len(y))
+    #f= np.linspace(0,Fs, len(Y))
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(t, y, label="Filtered SEE", alpha=1, color='blue')
+    plt.plot(t, E, label="Unfiltered SEE", alpha=0.5, color='grey')
+
+    plt.xlabel("Time [s]")
+    plt.ylabel("Magnitude")
+    plt.title("Overlay of filtered and unfiltered Shannon energy")
+    plt.xlim(0,3)
+
+    plt.legend()
+
+    plt.show()
+    plt.tight_layout()
