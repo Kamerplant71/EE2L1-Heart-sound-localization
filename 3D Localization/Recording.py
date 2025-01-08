@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+from scipy.signal import ShortTimeFFT
 from wavaudioread import wavaudioread
 
 def a_z(s_position,mic_positions, M,v,f0):
@@ -78,6 +78,34 @@ def create_points(x_steps,y_steps, x_max, y_max, z):
 
     return xyz
 
+def narrowband_Rx2(signal,nperseg):
+    Sx_all = []
+    win = ('gaussian', 1e-2 * fs) # Gaussian with 0.01 s standard dev.
+    SFT = ShortTimeFFT.from_window(win, fs, nperseg, noverlap=0,scale_to='magnitude', phase_shift=None)
+    f_bins = SFT.f
+
+    for i in range(0,8):            #Go through all mics to calculate Sx
+        if max(signal[:,i]) > 100:  #Only calculate Sx if signal actually has sound
+
+            Mic = signal[:,i]
+            Sx = SFT.stft(Mic)
+            Sx_all.append(Sx)
+
+    Sx_all = np.array(Sx_all)
+
+    #print(f_bins[N_Bins-1])
+    Rx_all = []
+    Xall = []
+    for j in range(0,len(f_bins)):   #Loop for each frequency bin
+        X = Sx_all[:, j, :]
+        Rx = np.matmul(X,X.conj().T)/len(signal[:,0]) 
+        #print(np.shape(Rx))
+        Rx_all.append(Rx)
+        Xall.append(X)
+        #print(np.shape(Rx_all))4
+    Rx_all= np.array(Rx_all)    
+    Xall= np.array(Xall)
+    return f_bins, Rx_all, Xall
 
 
 mic_positions= np.array( [[2.5 ,5.0, 0],
@@ -89,5 +117,66 @@ mic_positions= np.array( [[2.5 ,5.0, 0],
 
 fs = 48000
 
-signal =  wavaudioread("recordings\recording_one_channel_white_noise.wav",fs)
+signal =  wavaudioread("recordings\\recording_dual_channel_white_noise.wav",fs)
+nperseg = 50
+
+Q = 2
+Mics = 6
+d = 0.05
+v=340
+
+x_steps = y_steps = 50
+xmax = 10 /100
+ymax = 20 /100
+zmin= 5
+zmax = 20
+
+z = np.linspace(zmin,zmax,10)/100
+
+
+
+f_bins, Rx_all, Xall = narrowband_Rx2(signal,nperseg)
+print(len(f_bins))
+
+N_Bins = len(f_bins)
+
+Pytotal = []
+
+for i in range(len(z)):  # z ranges from 0 to 10
+    xyz = create_points(x_steps, y_steps, xmax, ymax, z[i])
+    Py_1_layer = np.zeros((x_steps,y_steps))
+    # Compute the MUSIC spectrum for the current z-plane
+    for i in range(1,2):  # len(f_bins)
+        #Py = music_z(Rx_all[i,:,:],Q,Mics,xyz,v,f_bins[i],mic_positions,x_steps,y_steps)
+        Py = mvdr_z(Rx_all[i,:,:],Mics,xyz,v,f_bins[i],mic_positions,x_steps,y_steps)
+        Py_1_layer = Py_1_layer + Py
+
+    print(np.shape(Py_1_layer))
+    Pytotal.append(Py_1_layer)
+    
+Pytotal = np.array(Pytotal)
+print(np.shape(Pytotal))    
+#pymax = np.max(py)
+
+
+
+# Plot the result
+
+fig, axes = plt.subplots(2, 5, figsize=(15, 8), constrained_layout=True)
+axes = axes.flatten()
+
+for i in range(len(z)):
+    ax = axes[i]
+    im = ax.imshow(np.abs(Pytotal[i,:,:]), extent=(0, xmax * 100, 0, ymax * 100), origin='lower', vmin=0, vmax = np.max(abs(Pytotal)))
+    ax.set_title(f"z = {z[i] * 100:.1f} cm")
+    ax.set_xlabel("x (cm)")
+    ax.set_ylabel("y (cm)")
+    mic_x = mic_positions[:, 0] * 100  # Convert to cm
+    mic_y = mic_positions[:, 1] * 100  # Convert to cm
+    ax.scatter(mic_x, mic_y, color='red', label='Microphones')
+
+# Add a colorbar to the figure
+fig.colorbar(im, ax=axes, orientation='horizontal', fraction=0.05, pad=0.1)
+plt.suptitle("MUSIC Spectrum at Different z-Planes", fontsize=16)
+plt.show()
 
