@@ -10,18 +10,18 @@ import tkinter as tk
 from tkinter import ttk
 from Functionsmodule1 import peaks_baby, Impulse, zero_pad_arrays, h_combine, input_signal, bpm_more_signals, ch3, SEE_plot
 
-signal_datat = {}
+
 
 def data_chooser(value):
     if value == 1:
         Fs, x = wavfile.read("Module1\hrecording_heart_ownDevice.wav")
         print("You chose signal 1")
-        signal_datat[Fs , x]
+        
 
     elif value == 2:
         print("You chose signal 2")
-        Fs2,x2 = wavfile.read("Module1\heart_single_channel_physionet_49829_TV.wav")
-        signal_datat[Fs2,x2]
+        Fs,x = wavfile.read("Module1\heart_single_channel_physionet_49829_TV.wav")
+        
 
 
 # def FS():  # Handles retrieving entry values
@@ -38,12 +38,14 @@ def distance():
 
 def handle_button_action(action):  # Handles button actions
     #print(action)
-    if action == "Heartbeat":
+    if action == "Spectrogram":
         print("Heartbeat action triggered")
+
+
         
     elif action == "Shannon energy":
         print("Shannon energy action triggered")
-        SEE_plot(Fs,data)
+        SEE_plot(Fs,x)
         
     # elif action == "SEE":
     #     print("SEE action triggered")
@@ -70,7 +72,7 @@ info3 = tk.Label(master, text="Minimal distance between the peaks to be?").grid(
 # Create buttons
 # confirm_button_FS = tk.Button(master, text="Confirm FS", command=FS).grid(row=1, column=2)
 confirm_button_distance = tk.Button(master, text="Confirm Distance", command=distance).grid(row=11, column=2)
-heartsignal_button = tk.Button(master, text="Heartsignal", command=lambda: handle_button_action("Heartbeat")).grid(row=6, column=1)
+heartsignal_button = tk.Button(master, text="Spectrogram", command=lambda: handle_button_action("Heartbeat")).grid(row=6, column=1)
 se_button = tk.Button(master, text="Shannon energy", command=lambda: handle_button_action("Shannon energy")).grid(row=7, column=1)
 # SEE_button = tk.Button(master, text="SEE", command=lambda: handle_button_action("SEE")).grid(row=8, column=1)
 
