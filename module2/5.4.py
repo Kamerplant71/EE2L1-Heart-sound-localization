@@ -6,7 +6,7 @@ from scipy.io import wavfile
 from scipy.fft import fft,ifft
 from wavaudioread import wavaudioread
 
-def ch3(x,y,epsi):
+def ch3(x,y,Lhat, epsi):
     Nx = len(x)            # Length of x
     Ny = len(y)             # Length of y
     L= Ny - Nx +1            # Length of h
@@ -30,16 +30,21 @@ def ch3(x,y,epsi):
         H[i] = 0
 
     h = np.real(ifft(H))   # ensure the result is real
-    h = h[0:L]    # optional: truncate to length Lhat (L is not reliable?)
+    h = h[0:Lhat]    # optional: truncate to length Lhat (L is not reliable?)
     return h
 
-Fs = 48000
-signal = wavaudioread("module2/240610_143941/TRACK01.WAV",Fs)
-input = wavaudioread("module2/white_noise_2_channel.wav",Fs)
-print(np.shape(signal))
-print(np.shape(input))
-h = ch3(input,signal,0.01)
+Fs, source = wavfile.read("module2/recording_2024-12-18_11-50-28_channel_0_source.wav")
+Fs_m, microphone = wavfile.read("module2/recording_2024-12-18_11-50-28_channel_1_microphone.wav")
+
+h = ch3(source ,microphone,48000,0.005)
+d=0.22 #meters
+#v=d/t 
+print(h)
 
 
-plt.plot(h)
+period=1/Fs
+
+t1= np.linspace(0,period*len(h),len(h))
+ 
+plt.plot(t1,h)
 plt.show()
