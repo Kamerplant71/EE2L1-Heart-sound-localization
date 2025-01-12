@@ -1,13 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import butter, spectrogram,TransferFunction
+from scipy.signal import butter, spectrogram, TransferFunction
 from scipy import signal
-import math
 
 from scipy.io import wavfile
 from scipy.fft import fft,ifft
 
-def peaks_baby(Fs,x):
+def peaks_baby(Fs,x, distance):
     period = 1/Fs
     xn= x/max(abs(x))
     xi = xn**2
@@ -31,7 +30,7 @@ def peaks_baby(Fs,x):
     
     y_reconstructed = np.concatenate((pieces))
     ynorm = y_reconstructed/max(y_reconstructed)
-    peaks, loveisintheair= signal.find_peaks(ynorm,0.2,distance = Fs/5)
+    peaks, loveisintheair= signal.find_peaks(ynorm,0.2,distance=distance)#Fs/5
 
     # plt.plot(t,ynorm)
     # plt.xlim(7,10)
@@ -168,8 +167,8 @@ def SEE_plot(Fs,x):
     #Y= fft(y)
     t= np.linspace(0,period*len(y),len(y))
     #f= np.linspace(0,Fs, len(Y))
-
-    plt.figure(figsize=(10, 6))
+    plt.close('all') 
+    fig = plt.figure(figsize=(10, 6))
     plt.plot(t, y, label="Filtered SEE", alpha=1, color='blue')
     plt.plot(t, E, label="Unfiltered SEE", alpha=0.5, color='grey')
 
@@ -182,3 +181,78 @@ def SEE_plot(Fs,x):
 
     plt.show()
     plt.tight_layout()
+    plt.close(fig)
+
+def Data_plot(Fs,data):
+    b, a = butter(2, [10/24000, 800/24000], btype='band')
+    dirac = np.concatenate((np.zeros(1500),[1],np.zeros(1500)))
+    g = signal.filtfilt(b, a,dirac)
+    G =fft(g)
+    period = 1/Fs
+    t1= np.linspace(0,period*len(g),len(g))
+    f1= np.linspace(0,Fs, len(G))
+
+    tdata = np.linspace(0,period*len(data),len(data))
+    d = np.convolve(data,g)
+    d = signal.filtfilt(b, a,data)
+    D=fft(d)
+
+    t2= np.linspace(0,period*len(d),len(d))
+    f2= np.linspace(0,Fs, len(D))
+
+    plt.close('all') 
+    fig = plt.figure(figsize=(10, 3))
+
+    
+    plt.plot(t2,d,label="filtered data", alpha=1, color='blue')
+    plt.xlabel("Time [s]")
+    plt.ylabel("Magnitude")
+    plt.title("Filtered and unfiltered data")
+    
+
+    
+    plt.plot(tdata,data, label="unfiltered data", alpha=0.5, color='grey')
+    plt.xlabel("Time [s]")
+    plt.ylabel("Magnitude")
+    #plt.title("Prefiltered data")
+    plt.ylim(-15000,15000)
+    
+
+    plt.legend()
+
+    plt.show()
+    plt.tight_layout()
+    plt.close(fig)
+
+
+def plot_spectrogram(Fs, x):
+    b, a = butter(2, [10/24000, 800/24000], btype='band')
+    g = signal.filtfilt(b, a, x)
+    f, t, Sxx = spectrogram(x, Fs, nperseg=256)
+    Sx_dB = 10 * np.log10(Sxx)
+    f2, t2, Sxx2 = spectrogram(g, Fs, nperseg=256)
+    Sx_dB2 = 10 * np.log10(Sxx2)
+    
+    # Clear all previous plots
+    plt.close('all')  
+    
+    # Create a new figure
+    fig, axs = plt.subplots(2, 1, figsize=(10, 8))
+    
+    # First subplot
+    axs[0].pcolormesh(t, f, Sx_dB, shading='gouraud')
+    axs[0].set_xlabel("Time (s)")
+    axs[0].set_ylabel("Frequency (Hz)")
+    axs[0].set_title("Raw Signal Spectrogram")
+    axs[0].colorbar = plt.colorbar(axs[0].pcolormesh(t, f, Sx_dB, shading='gouraud'), ax=axs[0])
+    
+    # Second subplot
+    axs[1].pcolormesh(t2, f2, Sx_dB2, shading='gouraud')
+    axs[1].set_xlabel("Time (s)")
+    axs[1].set_ylabel("Frequency (Hz)")
+    axs[1].set_title("Filtered Signal Spectrogram")
+    axs[1].colorbar = plt.colorbar(axs[1].pcolormesh(t2, f2, Sx_dB2, shading='gouraud'), ax=axs[1])
+    
+    plt.tight_layout()
+    plt.show()
+    plt.close(fig)
