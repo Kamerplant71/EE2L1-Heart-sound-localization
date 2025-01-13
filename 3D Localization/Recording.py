@@ -8,7 +8,7 @@ def a_z(s_position,mic_positions, M,v,f0):
 
     for i in range(M):
         rm = np.linalg.norm(s_position-mic_positions[i,:])
-        a[i]=    1/rm*  np.exp(-1j *f0*2*np.pi * rm /v)
+        a[i]=   1/rm*  np.exp(-1j *f0*2*np.pi * rm /v) 
         #print(rm)
 
 
@@ -118,7 +118,7 @@ mic_positions= np.array( [[2.5 ,5.0, 0],
 fs = 48000
 
 signal =  wavaudioread("recordings\\recording_dual_channel_white_noise.wav",fs)
-nperseg = 50
+nperseg = 100
 
 Q = 2
 Mics = 6
@@ -128,15 +128,15 @@ v=340
 x_steps = y_steps = 50
 xmax = 10 /100
 ymax = 20 /100
-zmin= 5
-zmax = 20
+zmin= 4
+zmax = 15
 
 z = np.linspace(zmin,zmax,10)/100
 
 
 
 f_bins, Rx_all, Xall = narrowband_Rx2(signal,nperseg)
-print(len(f_bins))
+print(f_bins)
 
 N_Bins = len(f_bins)
 
@@ -146,10 +146,11 @@ for i in range(len(z)):  # z ranges from 0 to 10
     xyz = create_points(x_steps, y_steps, xmax, ymax, z[i])
     Py_1_layer = np.zeros((x_steps,y_steps))
     # Compute the MUSIC spectrum for the current z-plane
-    for i in range(1,2):  # len(f_bins)
-        #Py = music_z(Rx_all[i,:,:],Q,Mics,xyz,v,f_bins[i],mic_positions,x_steps,y_steps)
-        Py = mvdr_z(Rx_all[i,:,:],Mics,xyz,v,f_bins[i],mic_positions,x_steps,y_steps)
-        Py_1_layer = Py_1_layer + Py
+    for i in range(1,len(f_bins)): 
+        if f_bins[i] >=2000 and f_bins[i] <= 6000:
+            Py = music_z(Rx_all[i,:,:],Q,Mics,xyz,v,f_bins[i],mic_positions,x_steps,y_steps)
+            #Py = mvdr_z(Rx_all[i,:,:],Mics,xyz,v,f_bins[i],mic_positions,x_steps,y_steps)
+            Py_1_layer = Py_1_layer + Py
 
     print(np.shape(Py_1_layer))
     Pytotal.append(Py_1_layer)
@@ -157,7 +158,6 @@ for i in range(len(z)):  # z ranges from 0 to 10
 Pytotal = np.array(Pytotal)
 print(np.shape(Pytotal))    
 #pymax = np.max(py)
-
 
 
 # Plot the result
