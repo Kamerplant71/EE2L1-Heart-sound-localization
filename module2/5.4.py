@@ -36,10 +36,14 @@ def ch3(x,y,Lhat, epsi):
 Fs, source = wavfile.read("module2/recording_2024-12-18_11-50-28_channel_0_source.wav")
 Fs_m, microphone = wavfile.read("module2/recording_2024-12-18_11-50-28_channel_1_microphone.wav")
 
-h = ch3(source ,microphone,48000,0.005)
+b, a = butter(2, [300/24000], btype='high')
+d, c = butter(2, [300/24000], btype='high')
+
+h = ch3(source ,microphone,48000,0.0005)
 d=0.22 #meters
 #v=d/t 
 print(h)
+signal.correlate()
 
 
 period=1/Fs
@@ -47,4 +51,5 @@ period=1/Fs
 t1= np.linspace(0,period*len(h),len(h))
  
 plt.plot(t1,h)
+plt.xlim(0,0.05)
 plt.show()

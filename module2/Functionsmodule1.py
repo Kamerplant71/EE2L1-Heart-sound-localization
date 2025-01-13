@@ -6,7 +6,7 @@ from scipy import signal
 from scipy.io import wavfile
 from scipy.fft import fft,ifft
 
-def peaks_baby(Fs,x, distance):
+def peaks_baby(Fs,x, d):
     period = 1/Fs
     xn= x/max(abs(x))
     xi = xn**2
@@ -30,7 +30,7 @@ def peaks_baby(Fs,x, distance):
     
     y_reconstructed = np.concatenate((pieces))
     ynorm = y_reconstructed/max(y_reconstructed)
-    peaks, loveisintheair= signal.find_peaks(ynorm,0.2,distance=distance)#Fs/5
+    peaks, loveisintheair= signal.find_peaks(ynorm,0.2, distance=d)#Fs/5 
 
     # plt.plot(t,ynorm)
     # plt.xlim(7,10)
