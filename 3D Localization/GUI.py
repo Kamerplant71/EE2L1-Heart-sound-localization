@@ -83,10 +83,10 @@ class PowerCalculationGUI:
         params = [
             ("Q", "2"),
             ("Mics", "6"),
-            ("v (velocity)", "340"),
+            ("v (velocity)", "80"),
             ("x_steps", "50"),
-            ("zmin", "11"),
-            ("zmax", "20"),
+            ("zmin", "6"),
+            ("zmax", "15"),
             ("nperseg", "100"),
             ("fmin", "2000"),
             ("fmax", "6000")
@@ -124,7 +124,10 @@ class PowerCalculationGUI:
             fmax = int(self.inputs["fmax"].get())
 
             # Generate dummy signal data
-            signal = wavaudioread("recordings\\recording_dual_channel_white_noise.wav",fs) # Placeholder signal
+            if Q == 2:
+                signal = wavaudioread("recordings\\recording_dual_channel_white_noise.wav",fs) # Placeholder signal
+            if Q == 1:
+                signal =wavaudioread("recordings\\recording_one_channel_white_noise.wav", fs)
 
             # Call the powercalculation function
             xmax = 10 /100
