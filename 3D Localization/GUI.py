@@ -6,7 +6,7 @@ from tkinter import ttk
 from Recording import a_z_multiplesources, mvdr_z, music_z, create_points, narrowband_Rx2
 fs=48000
 
-def powercalculation(Q, Mics, v, x_steps, zmin, zmax, signal, nperseg):
+def powercalculation(Q, Mics, v, x_steps, zmin, zmax, signal, nperseg, fmin, fmax):
     
     
     mic_positions= np.array( [[2.5 ,5.0, 0],
@@ -32,9 +32,10 @@ def powercalculation(Q, Mics, v, x_steps, zmin, zmax, signal, nperseg):
         Py_1_layer = np.zeros((x_steps,y_steps))
         # Compute the MUSIC spectrum for the current z-plane
         for i in range(1,len(f_bins)):  # len(f_bins)
-            Py = music_z(Rx_all[i,:,:],Q,Mics,xyz,v,f_bins[i],mic_positions,x_steps,y_steps)
-            #Py = mvdr_z(Rx_all[i,:,:], Mics,xyz,v,f_bins[i],mic_positions,x_steps,y_steps)
-            Py_1_layer = Py_1_layer + Py
+            if f_bins[i] >=fmin and f_bins[i] <= fmax:
+                Py = music_z(Rx_all[i,:,:],Q,Mics,xyz,v,f_bins[i],mic_positions,x_steps,y_steps)
+                #Py = mvdr_z(Rx_all[i,:,:], Mics,xyz,v,f_bins[i],mic_positions,x_steps,y_steps)
+                Py_1_layer = Py_1_layer + Py
 
         print(np.shape(Py_1_layer))
         Pytotal.append(Py_1_layer)
@@ -87,6 +88,8 @@ class PowerCalculationGUI:
             ("zmin", "11"),
             ("zmax", "20"),
             ("nperseg", "100"),
+            ("fmin", "2000"),
+            ("fmax", "6000")
         ]
 
         for i, (label, default) in enumerate(params):
@@ -117,6 +120,8 @@ class PowerCalculationGUI:
             zmin = float(self.inputs["zmin"].get())
             zmax = float(self.inputs["zmax"].get())
             nperseg = int(self.inputs["nperseg"].get())
+            fmin = int(self.inputs["fmin"].get())
+            fmax = int(self.inputs["fmax"].get())
 
             # Generate dummy signal data
             signal = wavaudioread("recordings\\recording_dual_channel_white_noise.wav",fs) # Placeholder signal
@@ -130,7 +135,7 @@ class PowerCalculationGUI:
                 [7.5,5,0 ],
                 [7.5,10,0],
                 [7.5,15,0]]) /100
-            Pytotal,z = powercalculation(Q, Mics, v, x_steps, zmin, zmax, signal, nperseg)
+            Pytotal,z = powercalculation(Q, Mics, v, x_steps, zmin, zmax, signal, nperseg, fmin, fmax)
             plotting(Pytotal,z, xmax, ymax, mic_positions)
 
             # Display output shape
