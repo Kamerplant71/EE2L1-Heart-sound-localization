@@ -103,7 +103,7 @@ master.geometry("700x250")
 info_label = None
 row_counter = 6
 entry_list = []
-array_cut = []
+
 
 # Initial interface setup
 reset_to_initial_state()

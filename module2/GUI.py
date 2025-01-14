@@ -32,20 +32,16 @@ def reset_to_initial_state():
 
 def signal_getten():
     global so, Fs, x
-    try:
-        so = signal_own.get()  # Retrieve the custom signal path from the Entry widget
-        if so:  # If a custom path is provided
-            Fs, x = wavfile.read(so)  # Load the signal
-            print(f"Custom signal loaded: {so}")
-            print(f"Sampling rate: {Fs}, Signal length: {len(x)}")
-            show_plotting_options()  # Proceed to the plotting options interface
-        else:
-            print("No custom signal path provided.")
-    except FileNotFoundError:
-        print(f"File not found: {so}")
-    except ValueError as e:
-        print(f"Error reading signal: {e}")
-
+    so = signal_own.get()  # Retrieve the custom signal path from the Entry widget
+    if so:  # If a custom path is provided
+        Fs, x = wavfile.read(so)  # Load the signal
+        print(f"Custom signal loaded: {so}")
+        print(f"Sampling rate: {Fs}, Signal length: {len(x)}")
+        show_plotting_options()  # Proceed to the plotting options interface
+    else:
+        print("No custom signal path provided.")
+  
+    
  
 def distance_getten():
     global d
@@ -80,6 +76,44 @@ def peaks():
     tk.Button(master, text="Go Back", command=reset_to_initial_state).grid(row=0, column=3)
 
 
+def SEE():
+    global first_entry, second_entry
+
+    for widget in master.winfo_children():
+        widget.destroy()
+
+    tk.Label(master, text="plot the SEE").grid(row=0, column=1)
+    tk.Label(master, text="What section do you want to cut? (t)").grid(row=4,column=1)
+
+    
+    tk.Button(master, text="SEE", command=lambda: handle_button_action("SEE")).grid(row=3, column=1)
+    tk.Button(master, text="Add index", command=Add_index).grid(row=row_counter + 10, column=1)
+    tk.Button(master, text="Confirm", command=cutting_arr).grid(row=row_counter + 11, column=2)
+    
+    first_entry = tk.Entry(master)
+    first_entry.grid(row=5, column=1)
+    entry_list.append(first_entry)
+    second_entry = tk.Entry(master)
+    second_entry.grid(row=5, column=2)
+    entry_list.append(second_entry)
+
+
+
+def Add_index():
+    global row_counter  # Keep track of the current row number
+    for i in range(1):  # Add two new entries
+        first_entry = tk.Entry(master)
+        first_entry.grid(row=row_counter, column=1)
+        entry_list.append(first_entry)  # Store the reference to the entry in the list
+
+        second_entry = tk.Entry(master)
+        second_entry.grid(row=row_counter, column=2)
+        entry_list.append(second_entry)  # Store the reference to the entry in the list
+
+        row_counter += 1  # Increment row counter
+
+
+
 def data_chooser(value):
     # Handle signal selection and display plotting options.
     global Fs, x, info_label, info2_label
@@ -95,13 +129,23 @@ def data_chooser(value):
     # Load the selected signal
     if value == 1:
         Fs, x = wavfile.read("Module1\hrecording_heart_ownDevice.wav")
+        show_plotting_options()
         
     elif value == 2:
         Fs, x = wavfile.read("Module1\heart_single_channel_physionet_49829_TV.wav")
+        show_plotting_options()
 
     
-
-
+def cutting_arr():
+    arr1 = []
+    for i in range(0, len(entry_list), 2):  # Iterate in pairs
+        value_1 = entry_list[i].get()
+        value_2 = entry_list[i + 1].get()
+        arr1.append([value_1, value_2])
+    
+    print("Array of values:", arr1) 
+     # Debugging output
+    return arr1
 
 def show_plotting_options():
      # Clear all widgets from the master window
@@ -113,7 +157,7 @@ def show_plotting_options():
     tk.Label(master, text="What plot would you like?").grid(row=0, column=1)
     tk.Button(master, text="Data", command=lambda: handle_button_action("Data")).grid(row=1, column=1)
     tk.Button(master, text="Spectrogram", command=lambda: handle_button_action("Spectrogram")).grid(row=2, column=1)
-    tk.Button(master, text="Shannon Energy", command=lambda: handle_button_action("Shannon energy")).grid(row=3, column=1)
+    tk.Button(master, text="SEE", command=lambda: SEE()).grid(row=3, column=1)
 
     # Add "Go Back" button
     tk.Button(master, text="Go Back", command=reset_to_initial_state).grid(row=0, column=2)
@@ -131,10 +175,10 @@ def handle_button_action(action):
 
     if action == "Spectrogram":
         plot_spectrogram(Fs, x)
-    elif action == "Shannon energy":
-        SEE_plot(Fs, x)
     elif action == "Data":
         Data_plot(Fs, x)
+    elif action == "SEE":
+        SEE_plot(Fs, x )
 
 
 # Main Tkinter window
@@ -149,6 +193,8 @@ Fs = None
 x = None
 d = None
 so= None
+row_counter = 6
+entry_list = []
 
 # Initial interface setup
 reset_to_initial_state()
