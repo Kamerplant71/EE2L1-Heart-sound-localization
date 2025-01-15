@@ -117,26 +117,10 @@ def peaks_baby(Fs,x):
 
 Fs = 48000
 period = 1/Fs
-# Folder containing audio files
-folder = "integration/segmentation_sound"
 
-# Get list of all .wav files in the folder
-wav_files = [os.path.join(folder, f) for f in os.listdir(folder) if f.endswith('.WAV')]
+x = wavaudioread("recordings\pos2_S1_recording.wav", Fs)
 
-# Initialize an empty list to store signals
-audio_signals = []
-
-# Read each .wav file
-for wav_file in wav_files:
-    signal = wavaudioread(wav_file, Fs)  # Read file
-    audio_signals.append(signal)
-
-# Convert to matrix (numpy array)
-audio_matrix = np.array(audio_signals).T
-
-# Print shape of the matrix
-print("Audio Matrix Shape:", audio_matrix.shape)
-xn= audio_matrix[:,0]/np.max(abs(audio_matrix))
+xn= x[:,0]/np.max(abs(x))
 xi = xn**2
 xi = xi + 1e-10
 E=-(xi *np.log10(xi))
@@ -160,8 +144,15 @@ for i in range(len(peaks)):
 
 print(f"Upper limits: {upperlimit}")
 print(f"Lower limits: {lowerlimit}")
-plt.subplot(211)
+plt.subplot(311)
 plt.plot(t,ynorm)
+plt.xlim(0,5)
+for i in range(len(upperlimit)):
+    plt.axvline(x=upperlimit[i]/Fs, color='r', linewidth=0.7, linestyle='--')
+    plt.axvline(x=lowerlimit[i]/Fs, color='r', linewidth=0.7, linestyle='--')
+
+plt.subplot(312)
+plt.plot(t,x)
 plt.xlim(0,5)
 for i in range(len(upperlimit)):
     plt.axvline(x=upperlimit[i]/Fs, color='r', linewidth=0.7, linestyle='--')
@@ -169,11 +160,11 @@ for i in range(len(upperlimit)):
 
 pieces = []
 for i in range(len(upperlimit)):
-    pieces.append(audio_matrix[lowerlimit[i]:upperlimit[i]])
+    pieces.append(x[lowerlimit[i]:upperlimit[i]])
 
 pieces = np.concatenate(pieces)
 
 print(pieces)
-plt.subplot(212)
+plt.subplot(313)
 plt.plot(pieces)
 plt.show()
