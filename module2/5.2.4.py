@@ -62,6 +62,7 @@ plt.subplot(212)
 plt.plot(w,Htotal)
 plt.xlabel("Frequency [Rad/s]")
 plt.ylabel("Magnitude")
+plt.ylim(0,)
 plt.title("Transfer function")
 #plt.xlim(0,20)
 

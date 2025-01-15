@@ -102,11 +102,12 @@ for m in range(6):  # For each microphone
 
 for m in range(len(X)):
     t = np.linspace (0,len(X[m])/Fs,len(X[m]))
-    plt.subplot(3,2,int(m+1))
-    plt.plot(t,X[m])
+    # plt.subplot(3,2,int(m+1))
+    plt.plot(t,X[m],label=f"Microphone {m+1}")
     plt.xlabel("Time [s]")
     plt.ylabel("Magnitude")
     plt.title("signal")
+    plt.legend()
     plt.xlim(0,1)
     jaja = peaks_baby(Fs,X[m])
 
