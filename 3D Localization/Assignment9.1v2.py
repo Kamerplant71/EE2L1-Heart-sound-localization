@@ -86,74 +86,66 @@ mic_positions= np.array( [[2.5 ,5.0, 0],
                 [7.5,10,0],
                 [7.5,15,0]]) /100
 
+
+#s_position= np.array([5,7.5,15]) / 100
+
+s_position = np.array([ [1, 1 ,12], 
+                        [9, 12.5, 12]]) /100
+
+M=6
 v=60
 f0= 150
 
-#s_position= np.array([10,5,15]) / 100
-
-s_position = np.array([[5, 7.5 ,15],[5,15,15]]) /100
-
-M=6
-
+x_steps = y_steps = 100
+xmax = 10 /100
+ymax = 20 /100
+z = np.linspace(11,20,10)/100
+Q=2
 
 
 sigma_n = 10**(-SNR/20); # std of the noise (SNR in dB)
-A = a_z_multiplesources(s_position, mic_positions, M, v , f0); # source direction vectors
+#A = a_z(s_position, mic_positions, M, v , f0); # source direction vectors
+A = a_z_multiplesources(s_position,mic_positions,M,v,f0)
 A_H = A.conj().T
 R = A @ A_H # assume equal powered sources
 Rn = np.eye(M,M)*sigma_n**2; # noise covariance
 Rx = R + Rn # received data covariance matrix
 
 
-x_steps = y_steps = 50
-xmax = 10 /100
-ymax = 20 /100
-z = 10 / 100
-Q=2
 
 
-xyz = create_points(x_steps,y_steps,xmax,ymax,z)
-print(xyz)
-#p = music_z(Rx, Q, M, xyz, v, f0, mic_positions,x_steps,y_steps)
-
-
-'''
-# Plot using imshow
-plt.imshow(abs(p), extent=(0, xmax*100, 0, ymax*100), origin='lower', aspect='auto')
-plt.colorbar(label="Power")
-plt.xlabel('X Position')
-plt.ylabel('Y Position')
-plt.title('MVDR Power Pattern')
-plt.show()
-
-'''
-fig, axes = plt.subplots(2, 5, figsize=(15, 8), constrained_layout=True)
-axes = axes.flatten()
 py = []
-
-z = np.linspace(11,20,10)/100
-
 
 for i in range(len(z)):  # z ranges from 0 to 10
     xyz = create_points(x_steps, y_steps, xmax, ymax, z[i])
     
     # Compute the MUSIC spectrum for the current z-plane
     p = music_z(Rx, Q, M, xyz, v, f0, mic_positions, x_steps, y_steps)
+    p = mvdr_z(Rx, M, xyz, v, f0, mic_positions, x_steps, y_steps)
     print(np.shape(p))
     py.append(p)
 py = np.array(py)
 print(np.shape(py))    
 pymax = np.max(py)
-    # Plot the result
-    
+
+
+
+# Plotting
+
+fig, axes = plt.subplots(2, 5, figsize=(15, 8), constrained_layout=True)
+axes = axes.flatten()
+
+  
 for i in range(len(z)):
     ax = axes[i]
-    im = ax.imshow(np.abs(py[i,:,:])/abs(pymax), extent=(0, xmax * 100, 0, ymax * 100), origin='lower')
+    im = ax.imshow(np.abs(py[i,:,:])/abs(pymax), extent=(0, xmax * 100, 0, ymax * 100), vmin =0, vmax = 1, origin='lower')
     ax.set_title(f"z = {z[i] * 100:.1f} cm")
     ax.set_xlabel("x (cm)")
     ax.set_ylabel("y (cm)")
+    mic_x = mic_positions[:, 0] * 100  # Convert to cm
+    mic_y = mic_positions[:, 1] * 100  # Convert to cm
+    ax.scatter(mic_x, mic_y, color='red', label='Microphones')
 
-# Add a colorbar to the figure
 fig.colorbar(im, ax=axes, orientation='horizontal', fraction=0.05, pad=0.1)
 plt.suptitle("MUSIC Spectrum at Different z-Planes", fontsize=16)
 plt.show()
