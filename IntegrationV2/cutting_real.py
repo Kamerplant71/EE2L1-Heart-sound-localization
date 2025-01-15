@@ -154,7 +154,7 @@ t4 = np.linspace(0,period*len(piecesS2),len(piecesS2))
 plt.plot(t4,piecesS2)
 # plt.plot(audio_matrix2)
 plt.show()
-
+print(np.shape(piecesS2))
 
 nperseg = 400
 
@@ -183,7 +183,7 @@ mic_positions= np.array( [[2.5 ,5.0, 0],
 Pytotal,z = powercalculation(Q,Mics,v,x_steps,zmin,zmax, pieces,nperseg,fmin,fmax)
 plotting(Pytotal,z,xmax,ymax,mic_positions)
 """
-f_bins, Rx_all, Xall = narrowband_Rx2(pieces,nperseg)
+f_bins, Rx_all, Xall = narrowband_Rx2(piecesS2,nperseg)
 print(f_bins)
 
 N_Bins = len(f_bins)

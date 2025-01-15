@@ -135,7 +135,7 @@ def narrowband_Rx2(signal,nperseg):
     f_bins = SFT.f
 
     for i in range(0,6):            #Go through all mics to calculate Sx
-        if max(signal[:,i]) > 100:  #Only calculate Sx if signal actually has sound
+        #if max(signal[:,i]) > 100:  #Only calculate Sx if signal actually has sound
 
             Mic = signal[:,i]
             Sx = SFT.stft(Mic)
