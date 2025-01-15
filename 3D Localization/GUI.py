@@ -124,7 +124,10 @@ class PowerCalculationGUI:
             fmax = int(self.inputs["fmax"].get())
 
             # Generate dummy signal data
-            signal = wavaudioread("recordingsv2\White_Noise_2Source_Linksonder.wav",fs) # Placeholder signal
+            if Q == 2:
+                signal = wavaudioread("recordings\\recording_dual_channel_white_noise.wav",fs) # Placeholder signal
+            if Q == 1:
+                signal =wavaudioread("recordings\\recording_one_channel_white_noise.wav", fs)
 
             # Call the powercalculation function
             xmax = 10 /100
