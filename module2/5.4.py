@@ -6,7 +6,7 @@ from scipy.io import wavfile
 from scipy.fft import fft,ifft
 from wavaudioread import wavaudioread
 
-def ch3(x,y,epsi):
+def ch3(x,y,epsi,Lhat):
     Nx = len(x)            # Length of x
     Ny = len(y)             # Length of y
     L= Ny - Nx +1            # Length of h
@@ -15,8 +15,8 @@ def ch3(x,y,epsi):
     print(L)
 
     # Force x to be the same length as y
-    x = np.append(x, [0]* (L-1))
-
+    x = np.append(x, [0] * (Ny - Nx))
+    
     print(len(x))
     print(len(y))
     # Deconvolution in frequency domain
@@ -33,12 +33,12 @@ def ch3(x,y,epsi):
     h = h[0:L]    # optional: truncate to length Lhat (L is not reliable?)
     return h
 
-Fs = 48000
-signal = wavaudioread("module2/240610_143941/TRACK01.WAV",Fs)
-input = wavaudioread("module2/white_noise_2_channel.wav",Fs)
-print(np.shape(signal))
-print(np.shape(input))
-h = ch3(input,signal,0.01)
+# Fs = 48000
+Fs, signal = wavfile.read("Heartrecordinganonanous/speedofsound.wav")
+Fs, input = wavfile.read("module2/beep_sound_stereo_louder_imput.wav")
+# print(np.shape(signal))
+# print(np.shape(input))
+h = ch3(input,signal,0.005,20000)
 
 
 plt.plot(h)
