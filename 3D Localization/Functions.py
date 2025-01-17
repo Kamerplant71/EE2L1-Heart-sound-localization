@@ -4,7 +4,7 @@ from scipy.signal import ShortTimeFFT
 fs = 48000
 
 def a_z(s_position,mic_positions, M,v,f0):
-    a = (np.ones((M,1),dtype="complex_"))
+    a = (np.ones((M,1),dtype="complex"))
 
     for i in range(M):
         rm = np.linalg.norm(s_position-mic_positions[i,:])
@@ -15,7 +15,7 @@ def a_z(s_position,mic_positions, M,v,f0):
     return a
 
 def a_z_multiplesources(s_positions, mic_positions, M, v, f0):
-    a = np.ones((M,len(s_positions)),dtype="complex_")
+    a = np.ones((M,len(s_positions)),dtype="complex")
     for j in range(0,len(s_positions)):
         for i in range(0,M):
             rm = np.linalg.norm(s_positions[j,:]-mic_positions[i,:])
