@@ -214,7 +214,85 @@ def cutting_arr():
         arr1.append([value_1, value_2])
     
     print("Array of values:", arr1) 
-     # Debugging output
+    signal = reinfunctie(value_1, value_2)
+    
+    class PowerCalculationGUI:
+        def __init__(self, root):
+            self.root = root
+            self.root.title("Power Calculation GUI")
+            self.setup_gui()
+
+        def setup_gui(self):
+            # Input frame
+            input_frame = ttk.LabelFrame(self.root, text="Input Parameters")
+            input_frame.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+
+            self.inputs = {}
+            params = [
+                ("Q", "1"),
+                ("Mics", "6"),
+                ("v (velocity)", "80"),
+                ("x_steps", "50"),
+                ("zmin", "6"),
+                ("zmax", "15"),
+                ("nperseg", "200"),
+                ("fbin", "2400")
+            ]
+
+            for i, (label, default) in enumerate(params):
+                ttk.Label(input_frame, text=f"{label}:").grid(row=i, column=0, padx=5, pady=5, sticky="e")
+                entry = ttk.Entry(input_frame)
+                entry.insert(0, default)
+                entry.grid(row=i, column=1, padx=5, pady=5, sticky="w")
+                self.inputs[label] = entry
+
+            # Buttons
+            action_frame = ttk.Frame(self.root)
+            action_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+
+            ttk.Button(action_frame, text="Run", command=self.run_calculation).grid(row=0, column=0, padx=5, pady=5)
+            ttk.Button(action_frame, text="Exit", command=self.root.quit).grid(row=0, column=1, padx=5, pady=5)
+
+            # Output
+            self.output_label = ttk.Label(self.root, text="", wraplength=400)
+            self.output_label.grid(row=2, column=0, padx=10, pady=10, sticky="nsew")
+
+        def run_calculation(self):
+            try:
+                # Retrieve input values
+                Q = int(self.inputs["Q"].get())
+                Mics = int(self.inputs["Mics"].get())
+                v = float(self.inputs["v (velocity)"].get())
+                x_steps = int(self.inputs["x_steps"].get())
+                zmin = float(self.inputs["zmin"].get())
+                zmax = float(self.inputs["zmax"].get())
+                nperseg = int(self.inputs["nperseg"].get())
+                fbin = int(self.inputs["fbin"].get())
+
+                # Generate dummy signal data
+
+                # Call the powercalculation function
+                xmax = 10 /100
+                ymax = 20 /100
+                mic_positions= np.array( [[2.5 ,5.0, 0],
+                    [2.5,10,0 ],
+                    [2.5,15,0 ],
+                    [7.5,5,0 ],
+                    [7.5,10,0],
+                    [7.5,15,0]]) /100
+                Pytotal,z = powercalculation(Q, Mics, v, x_steps, zmin, zmax, signal, nperseg, fbin)
+                plotting(Pytotal,z, xmax, ymax, mic_positions)
+
+                # Display output shape
+                self.output_label.config(text=f"Calculation complete! Pytotal shape: {Pytotal.shape}")
+            except ValueError as e:
+                self.output_label.config(text=f"Error: {e}")
+
+    if __name__ == "__main__":
+        root = tk.Tk()
+        app = PowerCalculationGUI(root)
+        root.mainloop()
+
     return arr1
 
 def show_plotting_options():
