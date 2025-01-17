@@ -6,7 +6,7 @@ from scipy import signal
 from scipy.io import wavfile
 from scipy.fft import fft,ifft
 
-def peaks_baby(Fs,x, d):
+def peaks_baby(Fs,x, d, h):
     period = 1/Fs
     xn= x/max(abs(x))
     xi = xn**2
@@ -30,8 +30,9 @@ def peaks_baby(Fs,x, d):
     
     y_reconstructed = np.concatenate((pieces))
     ynorm = y_reconstructed/max(y_reconstructed)
-    peaks, loveisintheair= signal.find_peaks(ynorm,0.2, distance=d)#Fs/5 
-
+    peaks, loveisintheair= signal.find_peaks(ynorm, height = h, distance = d)
+    
+ 
     # plt.plot(t,ynorm)
     # plt.xlim(7,10)
     # plt.show()
@@ -154,19 +155,23 @@ def ch3(x,y,epsi):
     h = h[0:L]    # optional: truncate to length Lhat (L is not reliable?)
     return h
 
-def SEE_plot(Fs,x):
-    period = 1/Fs
-    xn= x/max(abs(x))
+
+def SEE_plot(Fs, x):
+    period = 1 / Fs  # Sampling period
+    xn = x / np.max(abs(x))  # Normalize the signal
     xi = xn**2
     xi = xi + 1e-10
-    E=-(xi *np.log10(xi))
-    b, a = butter(2, [15/24000], btype='low')
-    y = signal.lfilter(b,a,E) #SEE envolope
+    E = -(xi * np.log10(xi))  # Shannon energy
 
+    # Design a low-pass filter
+    b, a = butter(2, [15 / (Fs / 2)], btype='low')
+    y = signal.lfilter(b, a, E)  # Filter the Shannon energy
+    ynorm = y / np.max(y)  # Normalize the filtered signal
 
-    #Y= fft(y)
-    t= np.linspace(0,period*len(y),len(y))
-    #f= np.linspace(0,Fs, len(Y))
+    # Recalculate the time vector based on the length of the cut signal
+    t = np.linspace(0, period * len(y), len(y))
+
+    # Plotting
     plt.close('all') 
     fig = plt.figure(figsize=(10, 6))
     plt.plot(t, y, label="Filtered SEE", alpha=1, color='blue')
@@ -175,10 +180,9 @@ def SEE_plot(Fs,x):
     plt.xlabel("Time [s]")
     plt.ylabel("Magnitude")
     plt.title("Overlay of filtered and unfiltered Shannon energy")
-    plt.xlim(0,3)
+    # plt.xlim(0, t[-1])  # Set x-axis limits to the new signal duration
 
     plt.legend()
-
     plt.show()
     plt.tight_layout()
     plt.close(fig)
@@ -256,3 +260,18 @@ def plot_spectrogram(Fs, x):
     plt.tight_layout()
     plt.show()
     plt.close(fig)
+
+
+def cutting(x,Fs,arr_cut):
+    arr_Fs = (Fs * arr_cut).astype(int)
+    offset = 0
+    for cut in arr_Fs:
+        start_idx = cut[0] - offset
+        end_idx = cut[1] - offset
+        x = np.delete(x, slice(start_idx, end_idx), axis=0) 
+        # Update the offset based on how many elements were removed
+        offset += end_idx - start_idx
+
+    xnorm = x /np.max(abs(x))
+
+    return xnorm

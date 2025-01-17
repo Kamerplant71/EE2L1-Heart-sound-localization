@@ -150,6 +150,7 @@ plt.plot(t3, piecesS1)
 plt.subplot(414)
 t4 = np.linspace(0,period*len(piecesS2),len(piecesS2)) 
 plt.plot(t4,piecesS2)
+plt.tight_layout()
 # plt.plot(audio_matrix2)
 plt.show()
 
