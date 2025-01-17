@@ -67,7 +67,7 @@ def plotting(Pytotal, z, xmax, ymax, mic_positions):
     plt.suptitle("MUSIC Spectrum at Different z-Planes", fontsize=16)
     plt.show()
     
-
+signal = wavaudioread("recordings\\recording_dual_channel_white_noise.wav", fs)
 class PowerCalculationGUI:
     def __init__(self, root):
         self.root = root
@@ -122,10 +122,6 @@ class PowerCalculationGUI:
             fbin = int(self.inputs["fbin"].get())
 
             # Generate dummy signal data
-            if Q == 2:
-                signal = wavaudioread("recordings\\recording_dual_channel_white_noise.wav",fs) # Placeholder signal
-            if Q == 1:
-                signal =wavaudioread("recordings\\recording_one_channel_white_noise.wav", fs)
 
             # Call the powercalculation function
             xmax = 10 /100
