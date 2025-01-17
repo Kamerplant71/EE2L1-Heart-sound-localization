@@ -15,7 +15,7 @@ def ch3(x,y,epsi,Lhat):
     print(L)
 
     # Force x to be the same length as y
-    x = np.append(x, [0] * (Ny - Nx))
+    x = np.append(x, [0] * (L+1))
     
     print(len(x))
     print(len(y))
@@ -30,7 +30,7 @@ def ch3(x,y,epsi,Lhat):
         H[i] = 0
 
     h = np.real(ifft(H))   # ensure the result is real
-    h = h[0:L]    # optional: truncate to length Lhat (L is not reliable?)
+    h = h[0:Lhat]    # optional: truncate to length Lhat (L is not reliable?)
     return h
 
 # Fs = 48000
