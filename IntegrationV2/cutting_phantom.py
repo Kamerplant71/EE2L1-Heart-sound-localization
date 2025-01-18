@@ -119,8 +119,9 @@ def peaks_baby(Fs,x):
 Fs = 48000
 period = 1/Fs
 
-x = wavaudioread("recordings\pos2_S1_recording.wav", Fs)
-
+x = wavaudioread("recordingsv2\S1_2Source_Linksboven_Version1.wav", Fs)
+print(np.shape(x))
+x = x[:,:6]
 xn= x[:,0]/np.max(abs(x))
 xi = xn**2
 xi = xi + 1e-10
@@ -129,7 +130,7 @@ b, a = butter(2, [15/(Fs/2)], btype='low')
 y = lfilter(b,a,E)# SEE envelope
 ynorm= y/np.max(y)
 t= np.linspace(0,period*len(y),len(y))
-peaks, loveisintheair= find_peaks(ynorm,0.2,distance = Fs/5)
+peaks, loveisintheair= find_peaks(ynorm,0.4,distance = Fs/5)
 
 upperlimit = []
 lowerlimit = []
@@ -147,14 +148,14 @@ print(f"Upper limits: {upperlimit}")
 print(f"Lower limits: {lowerlimit}")
 plt.subplot(311)
 plt.plot(t,ynorm)
-plt.xlim(10,15)
+plt.xlim(5,10)
 for i in range(len(upperlimit)):
     plt.axvline(x=upperlimit[i]/Fs, color='r', linewidth=0.7, linestyle='--')
     plt.axvline(x=lowerlimit[i]/Fs, color='r', linewidth=0.7, linestyle='--')
 
 plt.subplot(312)
 plt.plot(t,x)
-plt.xlim(10,15)
+plt.xlim(5,10)
 for i in range(len(upperlimit)):
     plt.axvline(x=upperlimit[i]/Fs, color='r', linewidth=0.7, linestyle='--')
     plt.axvline(x=lowerlimit[i]/Fs, color='r', linewidth=0.7, linestyle='--')
@@ -165,17 +166,23 @@ for i in range(len(upperlimit)):
 
 pieces = np.concatenate(pieces)
 
+for i in range(0,6):
+    pieces[:,i] = pieces[:,i] / np.max(pieces[:,i])
+
+# pieces = pieces[:,:6]
 print(pieces)
 plt.subplot(313)
 plt.plot(pieces)
 plt.show()
+
 
 nperseg = 400
 
 Q = 2
 Mics = 6
 d = 0.05
-v=200
+v=80 
+
 
 x_steps = y_steps = 50
 xmax = 10 /100
@@ -246,4 +253,5 @@ for j in range(N_Bins):
         # Add a colorbar to the figure
         fig.colorbar(im, ax=axes, orientation='horizontal', fraction=0.05, pad=0.1)
         plt.suptitle(f"MUSIC Spectrum at Different z-Planes for frequency two source {fmin} till {fmax} Hz", fontsize=16)
-        fig.savefig(f"P1_S1_v_{v}_npserseg_200_frequency_{fmin}_till_{fmax}.png", dpi=300)
+        plt.plot()
+        fig.savefig(f"P1_S1_v_{v}_npserseg_{nperseg}_frequency_{fmin}_till_{fmax}.png", dpi=300)
