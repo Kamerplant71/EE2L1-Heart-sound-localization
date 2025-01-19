@@ -7,7 +7,6 @@ from scipy.io import wavfile
 from scipy.fft import fft,ifft
 import os
 from scipy.signal import butter, spectrogram, TransferFunction, lsim, tf2zpk, lfilter, find_peaks
-from wavaudioread import wavaudioread
 
 def peaks_baby(Fs,x, d, h):
     period = 1/Fs
