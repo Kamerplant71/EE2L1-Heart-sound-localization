@@ -2,32 +2,50 @@ import numpy as np
 from scipy.signal import butter, spectrogram
 from scipy import signal
 import math
+import matplotlib.pyplot as plt
+import os
 
 from scipy.io import wavfile
 from scipy.fft import fft, ifft
 import tkinter as tk
-from Functionsmodule1 import peaks_baby, Impulse, zero_pad_arrays, h_combine, input_signal, bpm_more_signals, ch3, SEE_plot, Data_plot, plot_spectrogram, cutting
+from Functionsmodule1 import peaks_baby, Impulse, zero_pad_arrays, h_combine, input_signal, bpm_more_signals, ch3, SEE_plot, Data_plot, plot_spectrogram, cutting, cutting_real1, cuttingarray
+from wavaudioread import wavaudioread
 
 def reset_to_initial_state():
     # Reset the interface to the initial state with Signal 1 and Signal 2 buttons.
-    global info_label, signal_own # Use global so we can access it for destruction later
+    global info_label, signal_own, folder_6_array, finalarr, entry_list # Use global so we can access it for destruction later
 
     # Clear the window by destroying all widgets
     for widget in master.winfo_children():
         widget.destroy()
+
+    finalarr = []
+    entry_list = []
+    d=0
+    h=0
 
     # Recreate initial interface
     info_label = tk.Label(master, text="What example data would you like to use?")
     info_label.grid(row=0, column=1)
     info2_label = tk.Label(master, text="Your own signal. Copy relative path and change \ to /")
     info2_label.grid(row=3,column=1)
+    info3_label = tk.Label(master, text="For localization please fill in a folder of 6 microphone sounds")
+    info3_label.grid(row=5, column=1)
 
     tk.Button(master, text="Signal 1", command=lambda: data_chooser(1)).grid(row=1, column=1, padx=10, pady=2)
     tk.Button(master, text="Signal 2", command=lambda: data_chooser(2)).grid(row=2, column=1, padx=10, pady=2)
     tk.Button(master,text="Confirm", command = signal_getten).grid(row=4, column=2,padx=10, pady=10, sticky="w")
+    tk.Button(master,text="Confirm", command = folder_getten).grid(row=6, column=2,padx=10, pady=10, sticky="w")
     
     signal_own = tk.Entry(master, width=40)
-    signal_own.grid(row=4, column=1)
+    signal_own.grid(row=4, column=1, padx=10, pady=2)
+
+    folder_6_array = tk.Entry(master, width=40)
+    folder_6_array.grid(row=6, column=1, padx=10, pady=2)
+
+
+
+
 
 
 def signal_getten():
@@ -40,8 +58,160 @@ def signal_getten():
         show_plotting_options()  # Proceed to the plotting options interface
     else:
         print("No custom signal path provided.")
-  
+
+
+
+def folder_getten():
+    global audio_matrix, Fs
+    folder = folder_6_array.get()
+    if folder:
+        Fs = 48000
+        # Get list of all .wav files in the folder
+        wav_files = [os.path.join(folder, f) for f in os.listdir(folder) if f.endswith('.WAV')]
+
+        # Initialize an empty list to store signals
+        audio_signals = []
+
+        # Read each .wav file
+        for wav_file in wav_files:
+            signal = wavaudioread(wav_file, Fs)  # Read file
+            audio_signals.append(signal)
+
+        # Convert to matrix (numpy array)
+        audio_matrix = np.array(audio_signals).T
+        localization_gui()
+    else:
+        print("no worky")
+
+
     
+
+
+def localization_gui():
+    global first_entry, second_entry, finalarr, entry_list,plot, cut, hdistance, dheight
+
+    for widget in master.winfo_children():
+        widget.destroy()
+
+    finalarr = []
+    entry_list = []
+    # d=0
+    # h=0
+
+    # Add new label and entry for minimal distance
+    tk.Label(master, text="Set variables").grid(row=0, column=0, padx=10, pady=2)
+    tk.Label(master, text="Distance Threshold").grid(row=1, column=0, padx=10, pady=2)
+    tk.Label(master, text="Peaks Threshold").grid(row=2, column=0, padx=10, pady=2)
+    
+
+    # Create and store the Entry widget reference
+    hdistance = tk.Entry(master)
+    hdistance.grid(row=1, column=1, padx=10, pady=2)
+
+    dheight = tk.Entry(master)
+    dheight.grid(row=2, column=1, padx=10, pady=2)
+    
+    # Add a confirm button to retrieve the entry value
+    tk.Button(master, text="Confirm", command=hdlocal_getten).grid(row=2, column=2, columnspan=2, pady=10, sticky="w")
+    cut = tk.Button(master, text="I want to cut", command=i_want_to_cut)
+    cut.grid(row=3, column=0, columnspan=2, pady=10)
+    plot=tk.Button(master, text="Plot", command=lambda:reinfunctie(1))
+    plot.grid(row=3, column=1, columnspan=2, pady=10)
+
+    # Add a "Go Back" button
+    tk.Button(master, text="Go Back", command=reset_to_initial_state).grid(row=0, column=2)
+
+    
+   
+
+def i_want_to_cut():
+    global first_entry,second_entry
+    plot.destroy()
+    cut.destroy()
+
+    tk.Label(master, text="Cut sections in time intervals").grid(row=3, column=0, columnspan=3, pady=2)
+    tk.Label(master, text="Start Time").grid(row=5, column=0, padx=5, pady=2, sticky="e")
+    tk.Label(master, text="End Time").grid(row=5, column=1, padx=5, pady=2, sticky="w")
+
+    
+    
+    tk.Button(master, text="Add index", command=Add_index).grid(row=4, column=0, columnspan=2, pady=2)
+    tk.Button(master, text="Confirm", command=cutting_arr).grid(row=row_counter + 5, column=0, padx=10, pady=2, sticky="e")
+    tk.Button(master, text="Plot cutted signal", command=lambda: reinfunctie(2)).grid(row=row_counter + 5, column=1, padx=10, pady=2, sticky="w")
+    
+
+    first_entry = tk.Entry(master)
+    first_entry.grid(row=6, column=0, padx=5, pady=2)
+    entry_list.append(first_entry)
+    second_entry = tk.Entry(master)
+    second_entry.grid(row=6, column=1, padx=5, pady=2)
+    entry_list.append(second_entry)
+
+def reinfunctie(opdecut):
+    global Fs, finalarr, audio_matrix
+    if opdecut == 1:
+        # cuttingarray(Fs, finalarr, audio_matrix)
+        period=1/Fs
+        y, y2, ynorm , ynorm2, piecesS1, piecesS2, upperlimitS1,  lowerlimitS1, upperlimitS2, lowerlimitS2= cutting_real1(Fs, audio_matrix, hloc, dloc)
+        plt.subplot(411)
+        t= np.linspace(0,period*len(y),len(y))
+        plt.plot(t,ynorm)
+
+        plt.subplot(412)
+        t2= np.linspace(0,period*len(y2),len(y2))
+        for i in range(len(upperlimitS1)):
+            plt.axvline(x=upperlimitS1[i]/Fs, color='r', linewidth=0.7, linestyle='--')
+            plt.axvline(x=lowerlimitS1[i]/Fs, color='r', linewidth=0.7, linestyle='--')
+        for i in range(len(upperlimitS2)):
+            plt.axvline(x=upperlimitS2[i]/Fs, color='b', linewidth=0.7, linestyle='--')
+            plt.axvline(x=lowerlimitS2[i]/Fs, color='b', linewidth=0.7, linestyle='--')
+        plt.plot(t2,ynorm2)
+
+        plt.subplot(413)
+        t3 = np.linspace(0,period*len(piecesS1),len(piecesS1)) 
+        plt.plot(t3, piecesS1)
+
+        plt.subplot(414)
+        t4 = np.linspace(0,period*len(piecesS2),len(piecesS2)) 
+        plt.plot(t4,piecesS2)
+        plt.tight_layout()
+        # plt.plot(audio_matrix2)
+        plt.show()
+
+    
+    elif opdecut == 2:
+        
+
+        audio_matrix = cuttingarray(Fs, finalarr, audio_matrix)
+        period=1/Fs
+        y, y2, ynorm, ynorm2, piecesS1, piecesS2, upperlimitS1, lowerlimitS1, upperlimitS2, lowerlimitS2 = cutting_real1(Fs, audio_matrix, hloc, dloc)
+        plt.subplot(411)
+        t= np.linspace(0,period*len(y),len(y))
+        plt.plot(t,ynorm)
+
+        plt.subplot(412)
+        t2= np.linspace(0,period*len(y2),len(y2))
+        for i in range(len(upperlimitS1)):
+            plt.axvline(x=upperlimitS1[i]/Fs, color='r', linewidth=0.7, linestyle='--')
+            plt.axvline(x=lowerlimitS1[i]/Fs, color='r', linewidth=0.7, linestyle='--')
+        for i in range(len(upperlimitS2)):
+            plt.axvline(x=upperlimitS2[i]/Fs, color='b', linewidth=0.7, linestyle='--')
+            plt.axvline(x=lowerlimitS2[i]/Fs, color='b', linewidth=0.7, linestyle='--')
+        plt.plot(t2,ynorm2)
+
+        plt.subplot(413)
+        t3 = np.linspace(0,period*len(piecesS1),len(piecesS1)) 
+        plt.plot(t3, piecesS1)
+
+        plt.subplot(414)
+        t4 = np.linspace(0,period*len(piecesS2),len(piecesS2)) 
+        plt.plot(t4,piecesS2)
+        plt.tight_layout()
+        # plt.plot(audio_matrix2)
+        plt.show()
+
+
+
  
 def distance_getten():
     global d, h
@@ -49,7 +219,7 @@ def distance_getten():
     try:
         distance_value = distance.get()  # Use the global `distance` reference
         d = int(distance_value)  # Convert the input to an integer
-        print("Minimal distance between peaks:", d)
+        
     except ValueError:
         print("Please enter a valid number.")
 
@@ -61,6 +231,25 @@ def distance_getten():
         return  # If the height is invalid, stop the function
     
     peaks_baby(Fs,x,d, h )
+
+def hdlocal_getten():
+    global dloc, hloc
+    # Retrieve the value from the Entry widget
+    try:
+        hdistance_value = hdistance.get()  # Use the global `distance` reference
+        dloc = int(hdistance_value)  # Convert the input to an integer
+        
+    except ValueError:
+        print("Please enter a valid number.")
+
+    try:
+        dheight_value = dheight.get()  # Get the height value from the Entry widget
+        hloc = float(dheight_value)  # Convert to integer for height
+    except ValueError:
+        print("Please enter a valid number for height.")
+        return  # If the height is invalid, stop the function
+    
+    
 
 def peaks():
     global distance, height  # Declare `distance` as global to access it in `distance_getten`
@@ -153,7 +342,7 @@ def data_chooser(value):
 
     
 def cutting_arr():
-    global xnorm
+    global xnorm,finalarr
     arr1 = []
     for i in range(0, len(entry_list), 2):  # Iterate in pairs
         value_1 = entry_list[i].get()
@@ -167,15 +356,13 @@ def cutting_arr():
 
     print("Array of values:", finalarr) 
      # Debugging output
-    xnorm = cutting(x, Fs, finalarr)
+    # xnorm = cutting(x, Fs, finalarr)
     
-    return finalarr
+    return xnorm
 
 def plot_new_xnorm():
-    
+    xnorm = cutting(x, Fs, finalarr)
     SEE_plot(Fs,xnorm)
-
-
 
 
 def show_plotting_options():
@@ -227,10 +414,13 @@ master.geometry("700x500")
 # Global variable for the info label
 info_label = None
 info2_label = None
+audio_matrix = None
 Fs = None
 x = None
 d = None
 h = None
+dloc=None
+hloc=None
 so= None
 xnorm= None
 row_counter = 7

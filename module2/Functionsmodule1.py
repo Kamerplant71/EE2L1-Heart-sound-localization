@@ -5,6 +5,9 @@ from scipy import signal
 
 from scipy.io import wavfile
 from scipy.fft import fft,ifft
+import os
+from scipy.signal import butter, spectrogram, TransferFunction, lsim, tf2zpk, lfilter, find_peaks
+from wavaudioread import wavaudioread
 
 def peaks_baby(Fs,x, d, h):
     period = 1/Fs
@@ -275,3 +278,107 @@ def cutting(x,Fs,arr_cut):
     xnorm = x /np.max(abs(x))
 
     return xnorm
+
+
+def cuttingarray(Fs, array_cut_indices, audio_matrix):
+    
+    arr_Fs = (Fs * array_cut_indices).astype(int)
+    offset = 0
+    for cut in arr_Fs:
+        start_idx = cut[0] - offset
+        end_idx = cut[1] - offset
+        audio_matrix = np.delete(audio_matrix, slice(start_idx, end_idx), axis=0) 
+        # Update the offset based on how many elements were removed
+        offset += end_idx - start_idx
+    return audio_matrix
+
+def cutting_real1(Fs, audio_matrix, height_threshold,distance_threshold):
+
+
+    # Print shape of the matrix
+    period = 1/Fs
+    print("Audio Matrix Shape:", audio_matrix.shape)
+    xn= audio_matrix[:,0]/np.max(abs(audio_matrix))
+    xi = xn**2
+    xi = xi + 1e-10
+    E=-(xi *np.log10(xi))
+    b, a = butter(2, [15/(Fs/2)], btype='low')
+    y = lfilter(b,a,E)# SEE envelope
+    ynorm= y/np.max(y)
+    t= np.linspace(0,period*len(y),len(y))
+
+
+    audio_matrix2= audio_matrix	 /np.max(audio_matrix)
+    xn2= audio_matrix2[:,0]
+    xi2 = xn2**2
+    xi2 = xi2 + 1e-10
+    E2=-(xi2 *np.log10(xi2))
+    b, a = butter(2, [15/(Fs/2)], btype='low')
+    y2 = lfilter(b,a,E2)# SEE envelope
+    ynorm2= y2/np.max(y2)
+
+    peaks, loveisintheair= find_peaks(ynorm2,height_threshold,distance = distance_threshold)
+    diffpeaks=[]
+    S1 =[]
+    S2 = []
+    for i in range(len(peaks)-1):
+        diffpeaks.append(peaks[i+1] - peaks[i])
+            
+    for i in range(len(diffpeaks)-1):
+        if diffpeaks[i]>diffpeaks[i+1]:
+            S2.append(peaks[i])
+        else: S1.append(peaks[i])
+
+    endS1=[]
+    endS2=[]
+    if len(peaks) >= 3:  
+        diffpeaks[-1] = peaks[-2] - peaks[-3] 
+        diffpeaks[-2] = peaks[-1] - peaks[-2]  
+
+    if diffpeaks[-1] > diffpeaks[-2]:
+        endS1.append(peaks[-2])
+        endS2.append(peaks[-1])
+    else:
+        endS2.append(peaks[-2])
+        endS1.append(peaks[-1])
+
+
+    S1= np.concatenate((S1,endS1))
+    S2 = np.concatenate((S2,endS2))
+
+    upperlimitS1 = []
+    lowerlimitS1 = []
+    upperlimitS2 = []
+    lowerlimitS2 = []
+    for i in range(len(S1)):
+        for j in range(len(ynorm2)-S1[i]):
+            if ynorm2[S1[i]+j]<0.03:
+                upperlimitS1.append(S1[i]+j)
+                break
+        for j in range(S1[i]): 
+            if ynorm2[S1[i]-j]<0.03:
+                lowerlimitS1.append(S1[i]-j)
+                break
+
+    for i in range(len(S2)):
+        for j in range(len(ynorm2)-S2[i]):
+            if ynorm2[S2[i]+j]<0.03:
+                upperlimitS2.append(S2[i]+j)
+                break
+        for j in range(S2[i]): 
+            if ynorm2[S2[i]-j]<0.03:
+                lowerlimitS2.append(S2[i]-j)
+                break
+
+    piecesS1 = []
+    for i in range(len(upperlimitS1)):
+        piecesS1.append(audio_matrix2[lowerlimitS1[i]:upperlimitS1[i]])
+
+    piecesS1 = np.concatenate(piecesS1)
+
+    piecesS2 = []
+    for i in range(len(upperlimitS2)):
+        piecesS2.append(audio_matrix2[lowerlimitS2[i]:upperlimitS2[i]])
+
+    piecesS2 = np.concatenate(piecesS2)
+    return y, y2, ynorm, ynorm2, piecesS1, piecesS2, upperlimitS1, lowerlimitS1, upperlimitS2, lowerlimitS2
