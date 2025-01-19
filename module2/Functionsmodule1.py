@@ -3,11 +3,12 @@ import matplotlib.pyplot as plt
 from scipy.signal import butter, spectrogram, TransferFunction
 from scipy import signal
 
+
 from scipy.io import wavfile
 from scipy.fft import fft,ifft
 import os
 from scipy.signal import butter, spectrogram, TransferFunction, lsim, tf2zpk, lfilter, find_peaks
-from wavaudioread import wavaudioread
+# from wavaudioread import wavaudioread
 
 def peaks_baby(Fs,x, d, h):
     period = 1/Fs
@@ -382,3 +383,4 @@ def cutting_real1(Fs, audio_matrix, height_threshold,distance_threshold):
 
     piecesS2 = np.concatenate(piecesS2)
     return y, y2, ynorm, ynorm2, piecesS1, piecesS2, upperlimitS1, lowerlimitS1, upperlimitS2, lowerlimitS2
+
