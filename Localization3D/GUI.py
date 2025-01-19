@@ -6,7 +6,7 @@ from tkinter import ttk
 from Functions import music_z, create_points, narrowband_Rx2
 fs=48000
 
-def powercalculation(Q, Mics, v, x_steps, zmin, zmax, signal, nperseg, fmin, fmax):
+def powercalculation(Q, Mics, v, x_steps, zmin, zmax, signal, nperseg, fbin):
     
     
     mic_positions= np.array( [[2.5 ,5.0, 0],
@@ -32,7 +32,7 @@ def powercalculation(Q, Mics, v, x_steps, zmin, zmax, signal, nperseg, fmin, fma
         Py_1_layer = np.zeros((x_steps,y_steps))
         # Compute the MUSIC spectrum for the current z-plane
         for i in range(1,len(f_bins)):  # len(f_bins)
-            if f_bins[i] >=fmin and f_bins[i] <= fmax:
+            if f_bins[i] == fbin:
                 Py = music_z(Rx_all[i,:,:],Q,Mics,xyz,v,f_bins[i],mic_positions,x_steps,y_steps)
                 #Py = mvdr_z(Rx_all[i,:,:], Mics,xyz,v,f_bins[i],mic_positions,x_steps,y_steps)
                 Py_1_layer = Py_1_layer + Py
@@ -67,7 +67,7 @@ def plotting(Pytotal, z, xmax, ymax, mic_positions):
     plt.suptitle("MUSIC Spectrum at Different z-Planes", fontsize=16)
     plt.show()
     
-
+signal = wavaudioread("recordings\\recording_dual_channel_white_noise.wav", fs)
 class PowerCalculationGUI:
     def __init__(self, root):
         self.root = root
@@ -85,11 +85,10 @@ class PowerCalculationGUI:
             ("Mics", "6"),
             ("v (velocity)", "80"),
             ("x_steps", "50"),
-            ("zmin", "5"),
+            ("zmin", "6"),
             ("zmax", "15"),
-            ("nperseg", "100"),
-            ("fmin", "2000"),
-            ("fmax", "6000")
+            ("nperseg", "200"),
+            ("fbin", "2400")
         ]
 
         for i, (label, default) in enumerate(params):
@@ -120,14 +119,9 @@ class PowerCalculationGUI:
             zmin = float(self.inputs["zmin"].get())
             zmax = float(self.inputs["zmax"].get())
             nperseg = int(self.inputs["nperseg"].get())
-            fmin = int(self.inputs["fmin"].get())
-            fmax = int(self.inputs["fmax"].get())
+            fbin = int(self.inputs["fbin"].get())
 
             # Generate dummy signal data
-            if Q == 2:
-                signal = wavaudioread("recordings\\recording_dual_channel_white_noise.wav",fs) # Placeholder signal
-            if Q == 1:
-                signal =wavaudioread("recordings\\recording_one_channel_white_noise.wav", fs)
 
             # Call the powercalculation function
             xmax = 10 /100
@@ -138,7 +132,7 @@ class PowerCalculationGUI:
                 [7.5,5,0 ],
                 [7.5,10,0],
                 [7.5,15,0]]) /100
-            Pytotal,z = powercalculation(Q, Mics, v, x_steps, zmin, zmax, signal, nperseg, fmin, fmax)
+            Pytotal,z = powercalculation(Q, Mics, v, x_steps, zmin, zmax, signal, nperseg, fbin)
             plotting(Pytotal,z, xmax, ymax, mic_positions)
 
             # Display output shape
